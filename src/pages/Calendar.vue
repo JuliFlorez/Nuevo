@@ -1,14 +1,13 @@
 <template>
-
-	<div id="example-full">
-		<div class="calendar-controls">
+	<div id="example-calendar">
+		<div class="calendar-controls" v-if="!route.params.id">
 			<div class="box">
-				<h4 class="title is-5">Columnas</h4>
+				<h4 class="title is-5"><img src="../img/nav/logo.png" alt=""></h4>
 				<div class="notification" :class="{ 'is-active': state.clickedDay }" @click="showCurrentDate">
-          {{ state.message || welcomeMessage }}
-        </div>
+					{{ state.message || welcomeMessage }}
+				</div>
 
-				<div class="columns">
+				<div class="columns" >
 					<div class="column is-half">
 						<div class="field">
 							<label class="label">Mes o semana</label>
@@ -17,7 +16,6 @@
 									<select v-model="state.displayPeriodUom" class="is-fullwidth">
 										<option>month</option>
 										<option>week</option>
-										<option>year</option>
 									</select>
 								</div>
 							</div>
@@ -74,9 +72,13 @@
 						<input v-model="state.newItemStartDate" class="input is-fullwidth" type="date" />
 					</div>
 				</div>
+				<div class="containerBotones">
+					<button class="button m-2 btnCalendar" @click="clickTestAddItem">Agregar</button>
+					<button class="button m-2 btnCalendar" @click="shareCalendar"><i
+							class="fa-solid fa-share-nodes"></i>
+					</button>
+				</div>
 
-				<button class="button is-info m-2" @click="clickTestAddItem">Agregar</button>
-				<button class="button is-primary m-2" @click="shareCalendar">Compartir Calendario</button>
 			</div>
 		</div>
 
@@ -101,62 +103,83 @@
 	</div>
 	<!-- <button class="button is-primary" @click="shareCalendar">Compartir Calendario</button> -->
 
-
-	<div class="card is-small" v-if="!state.userPremium">
-		<div class="card-content">
-			<p> Hacete premium ahora perra </p>
+	<div class="containerCalendar" v-if="!route.params.id">
+		<div class="card is-small" v-if="!state.userPremium">
+			<div class="card-content">
+				<p> Hacete premium ahora perra </p>
+			</div>
 		</div>
+
+		<div class="card is-small custom-card" v-else
+			:class="{ 'has-text-danger': totalCalories > maxCal, 'has-text-success': totalCalories <= maxCal }">
+			<div class="card-content">
+				<p class="title custom-title">Total de Calorías del Mes</p>
+				<p class="subtitle" :style="{ color: totalCalories > maxCal ? 'red' : 'green' }">{{ totalCalories }} /
+					{{
+					Math.floor(maxCal) }}</p>
+				<p class="subtitle">Objetivo del Usuario: {{ state.userGoal }}</p>
+				<p class="subtitle">Se recomienda que por días consumas {{Math.floor(maxCal/ 30 ) }}</p>
+			</div>
+		</div>
+
+
 	</div>
 
-	<div class="card is-small" v-else
-		:class="{ 'has-text-danger': totalCalories > maxCal, 'has-text-success': totalCalories <= maxCal }">
-		<div class="card-content">
-			<p class="title">Total de Calorías del Mes</p>
-			<p class="subtitle" :style="{ color: totalCalories > maxCal ? 'red' : 'green' }">{{ totalCalories }} / {{
-					maxCal
-				}}</p>
-			<p class="subtitle">Objetivo del Usuario: {{ state.userGoal }}</p>
-			<p class="subtitle">Se recomienda que por días consumas {{ maxCal / 30 }}</p>
-		</div>
-	</div>
-
-
-	<!-- Modal para editar elementos -->
 	<div class="modal" :class="{ 'is-active': showModal }">
 		<div class="modal-background" @click="closeModal"></div>
 		<div class="modal-content">
 			<div class="box">
 
 				<template v-if="selectedModalItem">
-					<h2><strong>Título:</strong> {{ selectedModalItem.title }}</h2>
-					<p><strong>Descripción:</strong> {{ selectedModalItem.description }}</p>
-					<p><strong>Fecha de inicio:</strong> {{ selectedModalItem.startDate }}</p>
-					<!-- <p><strong>Fecha de fin:</strong> {{ selectedModalItem.endDate }}</p> -->
-					<p><strong>Calorías:</strong> {{ selectedModalItem.calories }}</p>
-					<p><strong>Hora:</strong> {{ selectedModalItem.hora }}</p>
-
-					<!-- Botones de editar y eliminar -->
-					<button @click="editItem(selectedModalItem)" class="icon-button edit-button">
-						<i class="far fa-pen-to-square"></i>
-					</button>
-
-					<button @click="clickDeleteItem(selectedModalItem)" class="icon-button delete-button">
-						<i class="far fa-calendar-xmark"></i>
-					</button>
-
+					<div class="two-columns">
+						<div class="row">
+							<div class="column">
+								<div class="item-details">
+									<p><strong>Comida:</strong> {{ selectedModalItem.title }}</p>
+									<p><strong>Descripción:</strong> {{ selectedModalItem.description }}</p>
+									<p><strong>Calorías:</strong> {{ selectedModalItem.calories }}</p>
+								</div>
+							</div>
+							<div class="column">
+								<div class="item-details">
+									<p><strong>Día:</strong> {{ formatDate(selectedModalItem.startDate) }}</p>
+									<p><strong>Hora:</strong> {{ selectedModalItem.hora }}</p>
+								</div>
+							</div>
+						</div>
+					</div>
 
 					<!-- Formulario de edición -->
-					<div v-if="editMode && editedItem.id === selectedModalItem.id">
-						<input v-model="editedItem.title" type="text" />
-						<input v-model="editedItem.description" type="text" />
-						<div>Fecha de inicio: {{ selectedModalItem.startDate }}</div>
-						<input v-model="editedItem.startDate" type="date" />
-						<!-- <div>Fecha de fin: {{ selectedModalItem.endDate }}</div>
-						<input v-model="editedItem.endDate" type="date" /> -->
-						<input v-model="editedItem.calories" type="number" />
+					<div v-if="editMode && editedItem.id === selectedModalItem.id" class="edit-form">
+						<label for="title">Comida</label>
+						<input v-model="editedItem.title" id="title" type="text" placeholder="Título" />
 
-						<!-- <input v-model="editedItem.hora" type="number" /> -->
-						<button @click="saveEditedItem">Guardar cambios</button>
+						<label for="description">Descripción</label>
+						<input v-model="editedItem.description" id="description" type="text"
+							placeholder="Descripción" />
+
+						<label for="startDate">Día:</label>
+						<input v-model="editedItem.startDate" type="date" id="startDate" required />
+
+						<label for="calories">Calorías</label>
+						<input v-model="editedItem.calories" id="calories" type="number" placeholder="Calorías" />
+
+						<!-- Botones de guardar cambios y cancelar -->
+						<div v-if="editMode && editedItem.id === selectedModalItem.id" class="edit-buttons">
+							<button @click="saveEditedItem" class="btn-edit">Guardar cambios</button>
+							<button @click="cancelEdit" class="btn-cancel">Cancelar</button>
+						</div>
+					</div>
+
+
+					<!-- Botones de editar y eliminar -->
+					<div class="edit-delete-buttons" v-if="!editMode || editedItem.id !== selectedModalItem.id">
+						<button @click="editItem(selectedModalItem)" class="icon-button edit-button">
+							<i class="far fa-pen-to-square"></i> Editar
+						</button>
+						<button @click="clickDeleteItem(selectedModalItem)" class="icon-button delete-button">
+							<i class="far fa-calendar-xmark"></i> Eliminar
+						</button>
 					</div>
 				</template>
 			</div>
@@ -164,8 +187,8 @@
 		<button class="modal-close is-large" aria-label="close" @click="closeModal"></button>
 	</div>
 
-</template>
 
+</template>
 
 <script setup lang="ts">
 // Using the publish version, you would do this instead:
@@ -183,7 +206,7 @@ import { useRoute } from 'vue-router';
 import { ref } from 'vue'
 import { watch } from 'vue';
 
-let welcomeMessage = "¡Bienvenido! Haz clic en un día para ver las comidas y las calorías.";
+let welcomeMessage = "Haz clic en un día para más detalles.";
 const sharedCalendarLink = ref('');
 
 const route = useRoute();
@@ -253,6 +276,12 @@ const userLocale = computed((): string => CalendarMath.getDefaultBrowserLocale()
 
 const dayNames = computed((): string[] => CalendarMath.getFormattedWeekdayNames(userLocale.value, "long", 0))
 
+const cancelEdit = () => {
+	editMode.value = false; // Desactiva el modo de edición
+	editedItem.value = {}; // Restaura el item editado a su estado original
+};
+
+
 const themeClasses = computed(() => ({
 	"theme-default": state.useDefaultTheme,
 	"holiday-us-traditional": state.useHolidayTheme,
@@ -301,7 +330,7 @@ watch(() => state.showDate, (newDate) => {
 
 
 const editItem = (item) => {
-	console.log("Editing item:", item);
+	console.log("Editando...", item);
 	editMode.value = true;
 	editedItem.value = { ...item }; // Copiar el item seleccionado en editedItem
 };
@@ -312,15 +341,24 @@ const saveEditedItem = () => {
 	const editedData = {
 		title: editedItem.value.title,
 		startDate: editedItem.value.startDate,
-		// endDate: editedItem.value.endDate,
 		calories: editedItem.value.calories,
 		hora: editedItem.value.hora,
 		description: editedItem.value.description
 	};
 
 	// Llamar a calendarUpdate con el objeto plano
-	calendarUpdate(editedItem.value.id, editedData);
+	calendarUpdate(editedItem.value.id, editedData)
+		.then(() => {
+			console.log("Item updated successfully!");
+			editMode.value = false; // Desactivar el modo de edición
+			closeModal(); // Cerrar el modal si es necesario
+			// Aquí podrías actualizar los datos en tu aplicación si es necesario
+		})
+		.catch((error) => {
+			console.error("Error updating item:", error);
+		});
 };
+
 
 const saveItem = () => {
 	if (editedItem.value && editedItem.value.id) {
@@ -379,7 +417,6 @@ onMounted(async () => {
 	const auth = getAuth();
 	onAuthStateChanged(auth, async (user) => {
 		if (user) {
-			console.log(route);
 			try {
 				const userProfile = await getUserProfileById(user.uid);
 				console.log("User profile:", userProfile);
@@ -497,6 +534,9 @@ const closeModal = () => {
 	showModal.value = false;
 };
 
+const formatDate = (date) => {
+	return new Date(date).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
+};
 
 const clickTestAddItem = (): void => {
 	console.log("Adding new calendar item...");
@@ -557,14 +597,14 @@ const getDailyCalories = (date) => {
 const onClickDay = (d: Date): void => {
 	state.selectionStart = undefined;
 	state.selectionEnd = undefined;
-	state.message = `You clicked: ${d.toLocaleDateString()}`;
-	state.message += `\nTotal Calories: ${getDailyCalories(d)}`;
+	state.message = `Ingresaste al: ${d.toLocaleDateString()}`;
+	state.message += `\nCalorias: ${getDailyCalories(d)}`;
 };
 
 
 
 const onClickItem = (item: INormalizedCalendarItem): void => {
-	state.message = `You clicked: ${item.title}`
+	state.message = `Ingresaste a: ${item.title}`
 	showItemModal(item);
 }
 
@@ -574,8 +614,6 @@ const clickDeleteItem = (item) => {
 		calendarDelete(item.id);
 	}
 };
-
-
 
 const setShowDate = (d: Date): void => {
 	state.message = `Changing calendar view to ${d.toLocaleDateString()}`
@@ -593,7 +631,7 @@ const finishSelection = (dateRange: Date[]): void => {
 }
 
 const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
-	state.message = `You dropped ${item.id} on ${date.toLocaleDateString()}`
+	state.message = `Lo moviste al dia: ${date.toLocaleDateString()}`
 	// Determine the delta between the old start date and the date chosen,
 	// and apply that delta to both the start and end date to move the item.
 	const eLength = CalendarMath.dayDiff(item.startDate, date)
@@ -603,15 +641,16 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 
 </script>
 
+
 <style>
 @import "https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css";
 /* For apps using the npm package, the below URLs should reference /node_modules/vue-simple-calendar/dist/css/ instead */
 
-#example-full {
+#example-calendar {
 	display: flex;
 	flex-direction: row;
 	font-family: Calibri, sans-serif;
-	width: 100vw;
+	width: 95vw;
 	margin-top: 2%;
 	margin-bottom: 2%;
 	min-width: 30rem;
@@ -621,16 +660,23 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	margin-right: auto;
 }
 
+.box {
+	border: 2px solid #019640;
+
+}
+
 .calendar-controls {
 	width: 25%;
-	margin-top: 2%;
-	/* margin-left: 1px; */
+	margin-top: 1%;
 	margin-right: 2%;
+
 }
 
 .notification {
 	background-color: #019640;
 	color: white;
+	font-size: 15px;
+	font-weight: bold;
 }
 
 .add-panel {
@@ -638,6 +684,7 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	margin-right: 1rem;
 	min-width: 14rem;
 	max-width: 14rem;
+
 }
 
 .calendar-parent {
@@ -648,53 +695,270 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	background-color: #ffffff;
 	border-radius: 3px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+}
+
+.custom-card {
+	width: 78%;
+	border: 2px solid #019640;
+	border-radius: 10px;
+}
+
+.containerCalendar {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+}
+
+.custom-title {
+	color: #333;
+	font-weight: bold;
+	/* Otros estilos personalizados para el título */
 }
 
 
 /* For long calendars, ensure each week gets sufficient height. The body of the calendar will scroll if needed */
-#example-full .cv-wrapper.period-month.periodCount-2 .cv-week,
-#example-full .cv-wrapper.period-month.periodCount-3 .cv-week,
-#example-full .cv-wrapper.period-year .cv-week {
+#example-calendar .cv-wrapper.period-month.periodCount-2 .cv-week,
+#example-calendar .cv-wrapper.period-month.periodCount-3 .cv-week,
+#example-calendar .cv-wrapper.period-year .cv-week {
 	min-height: 6rem;
 }
 
 /* These styles are optional, to illustrate the flexbility of styling the calendar purely with CSS. */
 
 /* Add some styling for items tagged with the "birthday" class */
-#example-full .theme-default .cv-item.birthday {
+#example-calendar .theme-default .cv-item.birthday {
 	background-color: #e0f0e0;
 	border-color: #d7e7d7;
 }
 
-#example-full .theme-default .cv-item.birthday::before {
+#example-calendar .theme-default .cv-item.birthday::before {
 	content: "\1F382";
 	/* Birthday cake */
 	margin-right: 0.5em;
 }
 
-
-.icon-button {
-    background-color: transparent;
-	border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 2em; /* Tamaño del icono */
-    padding: 0.5em; /* Espaciado alrededor del icono */
-    transition: transform 0.2s; /* Efecto de transición al hacer hover */
+.edit-delete-buttons {
+	text-align: center;
+	/* Centra los botones */
 }
 
-.icon-button:hover {
-    transform: scale(1.2); /* Aumenta ligeramente el tamaño al hacer hover */
+.icon-button {
+	padding: 10px 20px;
+	/* Espaciado interno */
+	margin: 0 10px;
+	/* Margen entre botones */
+	border: none;
+	/* Elimina el borde */
+	border-radius: 5px;
+	/* Bordes redondeados */
+	cursor: pointer;
+	/* Cambia el cursor al pasar sobre los botones */
 }
 
 .edit-button {
-    color: #168818; /* Color para el botón de editar */
+	background-color: #4CAF50;
+	/* Color de fondo verde */
+	color: white;
+	/* Color del texto blanco */
 }
 
 .delete-button {
-    color: #0b842f; /* Color para el botón de eliminar */
+	background-color: #f44336;
+	/* Color de fondo rojo */
+	color: white;
+	/* Color del texto blanco */
 }
 
+/* Estilos para el ícono */
+.icon-button i {
+	margin-right: 5px;
+	/* Espaciado a la derecha del ícono */
+}
 
-/* The following classes style the classes computed in myDateClasses and passed to the component's dateClasses prop. */
+.btnCalendar {
+	background-color: #FF9F0D;
+	/* Color de fondo actual */
+	color: black;
+	/* Color del texto */
+	border: 2px solid #FF9F0D;
+	/* Borde del mismo color que el fondo */
+	border-radius: 10px;
+	/* Borde redondeado */
+	padding: 10px 20px;
+	/* Espacio alrededor del botón */
+	font-size: 1.2em;
+	/* Tamaño del texto */
+	cursor: pointer;
+	/* Cursor de apuntador */
+	transition: background-color 0.3s, color 0.3s;
+	/* Transición suave */
+}
+
+.btnCalendar:hover {
+	background-color: white;
+	/* Cambio de color de fondo al pasar el cursor */
+	color: #FF9F0D;
+	/* Cambio de color del texto al pasar el cursor */
+}
+
+.btnCalendar:focus {
+	outline: none;
+	/* Eliminar el contorno al hacer foco */
+}
+
+.item-details {
+	margin-bottom: 20px;
+}
+
+.edit-delete-buttons {
+	display: flex;
+	justify-content: space-between;
+}
+
+.modal-content {
+	max-width: 600px;
+	/* Ajustar según el tamaño deseado */
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.edit-form {
+	background-color: #f2f2f2;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 300px;
+	margin: auto;
+}
+
+.edit-form input,
+.edit-form div {
+	width: 100%;
+	margin-bottom: 15px;
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+
+.edit-form button {
+	width: 100%;
+	padding: 10px;
+	border: none;
+	border-radius: 5px;
+
+	color: white;
+	cursor: pointer;
+}
+
+.btn-cancel {
+	background-color: #ff6347;
+	/* Color de fondo rojo */
+	color: white;
+	/* Color del texto */
+	border: none;
+	/* Borde */
+	border-radius: 5px;
+	/* Bordes redondeados */
+	padding: 10px 20px;
+	/* Espaciado interno */
+	cursor: pointer;
+	/* Cursor de apuntador */
+	transition: background-color 0.3s, color 0.3s;
+	/* Transición suave */
+	margin-top: 10px;
+}
+
+.btn-cancel:hover {
+	background-color: #d13838;
+	/* Cambio de color de fondo al pasar el cursor */
+}
+
+.btn-cancel:focus {
+	outline: none;
+	/* Eliminar el contorno al hacer foco */
+}
+
+.btn-edit {
+	background-color: #4CAF50;
+	/* Color de fondo verde */
+	color: white;
+	/* Color del texto */
+	border: none;
+	/* Borde */
+	border-radius: 5px;
+	/* Bordes redondeados */
+	padding: 10px 20px;
+	/* Espaciado interno */
+	cursor: pointer;
+	/* Cursor de apuntador */
+	transition: background-color 0.3s, color 0.3s;
+	/* Transición suave */
+	margin-right: 10px;
+}
+
+.btn-edit:hover {
+	background-color: #45a049;
+	/* Cambio de color de fondo al pasar el cursor */
+}
+
+.btn-edit:focus {
+	outline: none;
+	/* Eliminar el contorno al hacer foco */
+}
+
+/* Estilos para pantallas pequeñas */
+@media screen and (max-width: 768px) {
+	.box {
+		width: 80%;
+	}
+
+	#example-calendar {
+		width: 20%;
+	}
+
+	.calendar-controls {
+		width: 10%;
+		/* Ocupar todo el ancho disponible */
+		margin-right: 0;
+		/* Eliminar el margen derecho */
+	}
+
+	.custom-card {
+		width: 100%;
+		/* Ocupar todo el ancho disponible */
+	}
+
+	.container {
+		flex-direction: column;
+		/* Cambiar a dirección de columna para que los elementos se apilen */
+		align-items: center;
+		/* Centrar los elementos horizontalmente */
+	}
+
+	.modal-content {
+		max-width: 90%;
+		/* Reducir el ancho máximo */
+	}
+}
+
+@media screen and (max-width: 1000px) {
+	#example-calendar {
+		flex-direction: column;
+	}
+
+	.calendar-controls {
+		width: 100%;
+		margin-right: 0;
+		margin-bottom: 20px;
+	}
+
+	.custom-card {
+		width: 100%;
+	}
+
+	.container {
+		flex-direction: column;
+	}
+}
 </style>

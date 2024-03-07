@@ -31,9 +31,9 @@ const routes = [
     { path: '/premium',         component: Premium, },
     { path: '/chekout',         component: Chekout, },    
     { path: '/panel',           component: Panel, },
-    { path: '/success', component: Success },
-    { path: '/failure', component: Failure },
-    { path: '/pending', component: Pending },
+    { path: '/success',         component: Success },
+    { path: '/failure',         component: Failure },
+    { path: '/pending',         component: Pending },
     
     {
         path: "/usuario/:id/chat",

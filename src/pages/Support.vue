@@ -9,7 +9,7 @@
         <h2 class="mb-0">{{ faq.question }}</h2>
         <span :class="{ 'arrow-down': !faq.showAnswer, 'arrow-up': faq.showAnswer }"></span>
       </div>
-      <div v-show="faq.showAnswer" class="answer card-body">
+      <div class="answer">
         <p>{{ faq.answer }}</p>
       </div>
     </div>
@@ -131,19 +131,27 @@ h3 {
   /* Flecha hacia arriba en Unicode */
 }
 
-.answer {
-  margin-bottom: 20px;
+.open .answer {
+  max-height: 200px;
+  padding: 16px;
 }
 
-/* Agregamos estilos para la pregunta abierta por defecto */
-.open .arrow-down::before {
+.answer {
+  max-height: 0px;
+  overflow: hidden;
+  padding: 0px;
+  transition: all .3s ease 0s;
+}
+
+.arrow-down::before {
   content: '\25B2';
-  /* Flecha hacia arriba en Unicode */
+  transform: rotate(90deg);
+  transition: all .3s ease 0s;
 }
 
 .open .arrow-up::before {
-  content: '\25BC';
-  /* Flecha hacia abajo en Unicode */
+  transform: rotate(180deg);
+  transition: all .3s ease 0s;
 }
 
 /* Estilo para las imágenes */

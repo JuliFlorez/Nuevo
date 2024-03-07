@@ -1,8 +1,89 @@
+<template>
+  <div class="user-management text-center">
+    <h2 class="titleABM">Lista de Usuarios</h2>
+
+    <!-- Campo de búsqueda -->
+    <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o correo electrónico..." class="search-input">
+
+    <!-- Muestra una carga mientras se obtienen los datos -->
+    <div v-if="loading" class="loading">Cargando...</div>
+
+    <div class="container">
+      <div class="table-responsive">
+        <table v-if="!loading" class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Email</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(usuario, index) in paginarUsuarios" :key="usuario.id">
+              <th scope="row">{{ calcularNumeroUsuario(index) }}</th>
+              <td>{{ usuario.email }}</td>
+              <td>{{ usuario.displayName }}</td>
+              <td class="actions">
+                <button @click="verPerfil(usuario)" class="btn btn-primary mr-1 m-1"><i class="fa-solid fa-user "></i> Ver Perfil</button>
+
+                <button @click="editarUsuario(usuario)" class="btn btn-warning mr-1 m-1"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+
+                <button @click="confirmDelete(usuario.id)" class="btn btn-danger mr-1 m-1"><i class="fa-solid fa-trash"></i> Borrar</button>
+
+                <router-link class="btn btn-primary mr-2" :to="`/usuario/${usuario.id}/chat`"><i class="fa-solid fa-comment"></i> Chat</router-link>
+
+                <button v-if="user.email === 'nutritrack@hotmail.com' && usuario.isAdmin" @click="hacerUsuario(usuario)" class="btn btn-secondary mr-1 m-1">Cambiar a Usuario</button>
+
+                <button v-if="user.email === 'nutritrack@hotmail.com' && !usuario.isAdmin" @click="hacerAdmin(usuario)" class="btn btn-info mr-1 m-1">Cambiar a Admin</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" :class="{ 'disabled': paginaActual === 1 }">
+            <a class="page-link" @click="paginaActual = paginaActual - 1">Atras</a>
+          </li>
+          <li class="page-item" v-for="pagina in totalPaginas" :key="pagina" :class="{ 'active': pagina === paginaActual }">
+            <a class="page-link" @click="paginaActual = pagina">{{ pagina }}</a>
+          </li>
+          <li class="page-item" :class="{ 'disabled': paginaActual === totalPaginas }">
+            <a class="page-link" @click="paginaActual = paginaActual + 1">Siguiente</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Modal de confirmación de eliminación -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar eliminación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            ¿Estás seguro de que quieres eliminar al usuario <strong>{{ userToDelete ? userToDelete.displayName : '' }}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button @click="deleteUserConfirmed(); closeDeleteModal()" type="button" data-bs-dismiss="modal" class="btn btn-danger">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 import { ref, onMounted, nextTick, computed } from 'vue';
 import { useAuth } from '../composition/useAuth';
 import { getAllUserProfiles, editUserProfile, deleteUser } from '../service/user';
-import { useRouter, useRoute } from 'vue-router'; // Importa useRoute desde vue-router
+import { useRouter, useRoute } from 'vue-router';
 
 export default {
   setup() {
@@ -10,11 +91,22 @@ export default {
     const loading = ref(true);
     const usuarios = ref([]);
     const localRouter = useRouter();
-    const route = useRoute(); // Obtén la ruta actual
+    const route = useRoute();
     const searchQuery = ref('');
     const userIdToDelete = ref(null);
     const userToDelete = ref(null);
+    const usuariosPorPagina = 10;
+    const paginaActual = ref(1);
 
+    const totalPaginas = computed(() => {
+      return Math.ceil(filteredUsuarios.value.length / usuariosPorPagina);
+    });
+
+    const paginarUsuarios = computed(() => {
+      const inicio = (paginaActual.value - 1) * usuariosPorPagina;
+      const fin = paginaActual.value * usuariosPorPagina;
+      return filteredUsuarios.value.slice(inicio, fin);
+    });
 
     const verPerfil = (usuario) => {
       if (usuario && usuario.id) {
@@ -33,12 +125,9 @@ export default {
       }
     };
 
-
     const confirmDelete = (userId) => {
       userIdToDelete.value = userId;
-      // Obtener el usuario a eliminar
       userToDelete.value = usuarios.value.find(usuario => usuario.id === userId);
-      // Abre el modal de confirmación
       const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
       modal.show();
     };
@@ -47,31 +136,22 @@ export default {
       if (userIdToDelete.value) {
         try {
           await deleteUser(userIdToDelete.value);
-          // Elimina el usuario de la lista
           usuarios.value = usuarios.value.filter(usuario => usuario.id !== userIdToDelete.value);
           console.log("Usuario eliminado con éxito.");
         } catch (error) {
           console.error("Error al eliminar el usuario:", error);
         } finally {
-          // Reinicia el valor del ID del usuario a eliminar
           userIdToDelete.value = null;
-          // Cierra el modal después de eliminar el usuario
-          closeDeleteModal(); // Llama a la función para cerrar el modal
-          // Forzar la actualización de la vista después de cerrar el modal
+          closeDeleteModal();
           await nextTick();
         }
       }
     };
 
-
     const closeDeleteModal = () => {
-      // Cierra el modal
       const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
       modal.hide();
     };
-
-
-
 
     const eliminarUsuario = async (userId) => {
       try {
@@ -104,26 +184,31 @@ export default {
     };
 
     const filteredUsuarios = computed(() => {
-      return usuarios.value.filter(usuario => {
-        const query = searchQuery.value.toLowerCase();
-        const nameMatch = usuario.displayName.toLowerCase().includes(query);
-        const emailMatch = usuario.email.toLowerCase().includes(query);
-        return nameMatch || emailMatch;
-      });
-    });
+  return usuarios.value.filter(usuario => {
+    const query = searchQuery.value.toLowerCase();
+    const nameMatch = usuario.displayName.toLowerCase().includes(query);
+    const emailMatch = usuario.email.toLowerCase().includes(query);
+    return nameMatch || emailMatch;
+  }).sort((a, b) => a.createdAt - b.createdAt); // Ordenar por fecha de creación en orden ascendente
+});
 
+    const calcularNumeroUsuario = (index) => {
+      return (paginaActual.value - 1) * usuariosPorPagina + index + 1;
+    };
 
     onMounted(async () => {
-      try {
-        const fetchedUsuarios = await getAllUserProfiles();
-        await nextTick();
-        usuarios.value = fetchedUsuarios;
-      } catch (error) {
-        console.error("Error al obtener los perfiles de usuario:", error);
-      } finally {
-        loading.value = false;
-      }
-    });
+    try {
+      const fetchedUsuarios = await getAllUserProfiles();
+      // Ordenar los usuarios por fecha de creación en orden descendente
+      usuarios.value = fetchedUsuarios.sort((a, b) => b.createdAt - a.createdAt);
+    } catch (error) {
+      console.error("Error al obtener los perfiles de usuario:", error);
+    } finally {
+      loading.value = false;
+    }
+  });
+
+
 
     return {
       user,
@@ -139,97 +224,25 @@ export default {
       confirmDelete,
       deleteUserConfirmed,
       closeDeleteModal,
-      userToDelete
+      userToDelete,
+      totalPaginas,
+      paginaActual,
+      paginarUsuarios,
+      calcularNumeroUsuario
     };
   },
 };
 </script>
 
 
-
-
-
-<template>
-  <div class="user-management text-center">
-    <h2>Lista de Usuarios</h2>
-
-    <!-- Campo de búsqueda -->
-    <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o correo electrónico..." class="search-input">
-
-    <!-- Muestra una carga mientras se obtienen los datos -->
-    <div v-if="loading" class="loading">Cargando...</div>
-
-    <div class="container">
-      <div class="table-responsive">
-        <table v-if="!loading" class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Email</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(usuario, index) in filteredUsuarios" :key="usuario.id">
-              <th scope="row">{{ index + 1 }}</th>
-              <td>{{ usuario.email }}</td>
-              <td>{{ usuario.displayName }}</td>
-              <td class="actions">
-                <button @click="verPerfil(usuario)" class="btn btn-primary mr-1 m-1"><i class="fa-solid fa-user "></i> Ver
-                  Perfil</button>
-
-                <button @click="editarUsuario(usuario)" class="btn btn-warning mr-1 m-1">
-                  <i class="fa-solid fa-pen-to-square"></i> Editar
-                </button>
-
-                <button @click="confirmDelete(usuario.id)" class="btn btn-danger mr-1 m-1"><i
-                    class="fa-solid fa-trash"></i> Borrar</button>
-
-                <button v-if="user.email === 'nutritrack@hotmail.com' && usuario.isAdmin" @click="hacerUsuario(usuario)"
-                  class="btn btn-secondary mr-1 m-1">Cambiar a Usuario</button>
-
-                <button v-if="user.email === 'nutritrack@hotmail.com' && !usuario.isAdmin" @click="hacerAdmin(usuario)"
-                  class="btn btn-info mr-1 m-1">Cambiar a Admin</button>
-              </td>
-              <router-link class="btn btn-primary mr-2" :to="`/usuario/${usuario.id}/chat`">Chat Privado</router-link>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar eliminación</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-  ¿Estás seguro de que quieres eliminar al usuario <strong>{{ userToDelete ? userToDelete.displayName : '' }}</strong>?
-</div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button @click="deleteUserConfirmed(); closeDeleteModal()" type="button" data-bs-dismiss="modal"
-            class="btn btn-danger">Eliminar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-
-
-
-
-
 <style scoped>
 .actions {
   margin-left: 10%;
+}
+
+.titleABM {
+  font-size: 30px;
+  font-weight: bold;
 }
 
 .search-input {
@@ -240,7 +253,6 @@ export default {
   width: 50%;
   margin-bottom: 15px;
 }
-
 
 .user-management {
   margin: 20px;
@@ -308,5 +320,3 @@ export default {
   }
 }
 </style>
-
-

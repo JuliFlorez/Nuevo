@@ -6,6 +6,7 @@ import { getUserProfileById } from "./../service/user.js";
 
 import ComidaSeleccionadaCard from '../components/ComidaSeleccionadaCard.vue';
 
+
 export default {
   name: 'Food',
   components: {
@@ -223,23 +224,34 @@ export default {
       }
     },
 
+
     async eliminarComidaDePerfil(comidaId) {
       try {
-        console.log("Deleting food from profile...");
+        console.log("Eliminando comida del perfil...");
         const auth = getAuth();
         const usuario = auth.currentUser;
 
+        if (!usuario) {
+          throw new Error('El usuario no está autenticado');
+        }
+
+        const userId = usuario.uid;
         const db = getFirestore();
-        const docRef = doc(db, 'foodsave', usuario.uid);
+        const userfoodsaveRef = collection(db, `users/${userId}/foodsave`);
 
-        await updateDoc(docRef, {
-          comidas: arrayRemove(comidaId)
-        });
+        const comidaDocRef = doc(userfoodsaveRef, comidaId);
+        await deleteDoc(comidaDocRef);
 
+        console.log("Comida eliminada del perfil:", comidaId);
+        this.comidasGuardadas = this.comidasGuardadas.filter(comida => comida.id !== comidaId);
+        alert('Comida eliminada del perfil correctamente.');
       } catch (error) {
         console.error('Error al eliminar la comida del perfil del usuario:', error);
+        alert('Error al eliminar la comida del perfil. Por favor, inténtalo de nuevo.');
       }
     },
+
+
 
     async foodsaveSubscribeToChanges() {
       try {
@@ -371,20 +383,38 @@ export default {
 
 
 <template>
+
+
+
+  <div class="banner">
+    <img src="../img/banner-food.jpg" alt="Banner" class="img-fluid">
+  </div>
+
   <div class="container">
 
-    <div class="d-flex justify-content-end mb-3">
-      <!-- Botones en el lado derecho -->
-      <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-        aria-controls="offcanvasRight"><i class="fa-regular fa-bookmark"></i></button>
-      <button v-if="mostrarBotonModal" type="button" class="btn btn-primary" data-bs-toggle="modal"
-        data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">
-        <i class="fa-solid fa-plus"></i>
-      </button>
+    <!-- <h1 class="text-center">Bienvenido a comidas</h1> -->
+    <!-- <div id="h" class="milky">Milky</div> -->
 
+    <div>
+      <div class="header-info">
+        <div class="header-txt">
+          <h1>Bienvenido a comidas</h1>
+          <p>En esta sección buscamos ayudarte en tu alimentación dependiendo de la meta que hayas elegido, además te
+            recomendamos el momento del día en el que la puedes consumir. Recorda que estas comidas son solo
+            recomendaciones,
+            podes consumir lo que creas correcto.</p>
+        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-md-end mb-3">
+          <!-- Botones alineados a la derecha en dispositivos medianos y grandes -->
+          <button v-if="mostrarBotonModal" type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
+            data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Añadir
+            <i class="fa-solid fa-plus"></i>
+          </button>
+          <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+            aria-controls="offcanvasRight">Guardados <i class="fa-regular fa-bookmark"></i></button>
+        </div>
+      </div>
     </div>
-
-    <h1 class="text-center">¿Qué Puedo Comer Durante El Día?</h1>
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
       <div class="offcanvas-header">
@@ -400,6 +430,7 @@ export default {
                 <h5 class="card-title">{{ comida.name }}</h5>
                 <p class="card-text">Calorías: {{ comida.calories }}</p>
                 <!-- Agrega aquí cualquier otra información que desees mostrar -->
+                <button @click="eliminarComidaDePerfil(comida.id)" class="btn btn-danger">Eliminar</button>
               </div>
             </div>
           </div>
@@ -411,18 +442,12 @@ export default {
       </div>
     </div>
 
-    <div class="text-center mt-4 mb-4">
-      <button @click="filterFood('Desayuno')" class="btn btn-primary m-2">Desayuno</button>
-      <button @click="filterFood('Almuerzo')" class="btn btn-primary m-2">Almuerzo</button>
-      <button @click="filterFood('Merienda')" class="btn btn-primary m-2">Merienda</button>
-      <button @click="filterFood('Cena')" class="btn btn-primary m-2">Cena</button>
-    </div>
 
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Nueva Comida</h1>
+            <h2 class="modal-title fs-5" id="exampleModalLabel">Agregar Nueva Comida</h2>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -453,7 +478,7 @@ export default {
               </div>
               <div class="mb-3">
                 <label for="calories" class="form-label">Calorías:</label>
-                <input v-model.number="newFood.calories" type="number" class="form-control" id="calories" required>
+                <input v-model.number="newFood.calories" type="text" class="form-control" id="calories" required>
               </div>
               <div class="mb-3">
                 <label class="form-label">Meta:</label><br>
@@ -483,83 +508,184 @@ export default {
     </div>
 
 
+
+
+
     <!-- Lista De Comidas -->
 
-    <div class="row">
-      <!-- Columna de Comida Recomendada -->
-      <div class="col-md-6">
-        <div class="recommended-food">
-          <h2 class="text-center">Comida Recomendada</h2>
-          <div v-if="recomendedFood.length > 0">
-            <div class="card-deck">
-              <div v-for="(item, index) in recomendedFood" :key="index" class="card mb-3">
-                <div class="card-body">
-                  <h5 class="card-title">{{ item.name }}</h5>
-                  <p class="card-text">Hora: {{ item.time }}</p>
-                  <p class="card-text">Calorías: {{ item.calories }}</p>
-                  <p class="card-text">Meta del usuario: {{ state.userGoal }}</p>
-                  <p class="card-text">Meta De La Comida: {{ item.goal }}</p>
-                  <p v-if="state.userGoal.toLowerCase() === item.goal.toLowerCase()" class="card-text text-success">
-                    ¡Esta comida se alinea con tu meta!</p>
-                  <p v-else class="card-text text-warning">Esta comida no se alinea con tu meta.</p>
-                  <div class="d-flex align-items-center">
-                    <button @click="guardarComidaEnPerfil(item.id)" class="btn btn-success m-2">
-                      <i v-if="!comidasGuardadas.includes(item.id)" class="fa-regular fa-bookmark"></i>
-                      <i v-else class="fa-solid fa-bookmark"></i>
-                    </button>
-                    <button @click="eliminarComida(item.id)" class="btn btn-danger">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
+    <div class="mt-4 mb-4 bts container">
 
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else>
-            <p class="text-center">No hay comidas recomendadas disponibles.</p>
-          </div>
-        </div>
+      <div class="tex-center mb-4 bts">
+        <button @click="filterFood('Desayuno')" class="btn btn-primary m-2">Desayuno</button>
+        <button @click="filterFood('Almuerzo')" class="btn btn-primary m-2">Almuerzo</button>
+        <button @click="filterFood('Merienda')" class="btn btn-primary m-2">Merienda</button>
+        <button @click="filterFood('Cena')" class="btn btn-primary m-2">Cena</button>
       </div>
 
-      <!-- Columna de Comida No Recomendada -->
-      <div class="col-md-6">
-        <div class="not-recommended-food">
-          <h2 class="text-center">Comida No Recomendada</h2>
-          <div v-if="unrecomendedFood.length > 0">
-            <div class="card-deck">
-              <div v-for="(item, index) in unrecomendedFood" :key="index" class="card mb-3">
-                <div class="card-body">
-                  <h5 class="card-title">{{ item.name }}</h5>
-                  <p class="card-text">Hora: {{ item.time }}</p>
-                  <p class="card-text">Calorías: {{ item.calories }}</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <button @click="eliminarComida(item.id)" class="btn btn-danger"><i
-                        class="fa-solid fa-trash"></i></button>
+      <div class="row">
+        <!-- Columna de Comida Recomendada -->
+        <div class="col-md-6">
+          <div class="recommended-food">
+            <h2 class="text-center">Comida recomendada</h2>
+            <div v-if="recomendedFood.length > 0">
+              <div class="card-deck">
+                <div v-for="(item, index) in recomendedFood" :key="index" class="card mb-3">
+                  <div class="card-body">
+                    <h4 class="card-title">{{ item.name }}</h4>
+                    <h5 class="card-text">Recomendado en: {{ item.time }}</h5>
+                    <h5 class="card-text">Calorías: {{ item.calories }}</h5>
+                    <h5 class="card-text">Receta: {{ item.recipe }}</h5>
+                    <!-- <p class="card-text">Meta del usuario: {{ state.userGoal }}</p> -->
+                    <h5 class="card-text">Meta De La Comida: {{ item.goal }}</h5>
+                    <h5 v-if="state.userGoal.toLowerCase() === item.goal.toLowerCase()" class="card-text text-success">
+                      ¡Esta comida se alinea con tu meta!</h5>
+                    <p v-else class="card-text text-warning">Esta comida no se alinea con tu meta.</p>
+                    <div class="d-flex align-items-center">
+                      <button @click="guardarComidaEnPerfil(item.id)" class="btn btn-success m-2">
+                        <i v-if="!comidasGuardadas.includes(item.id)" class="fa-regular fa-bookmark"></i>
+                        <i v-else class="fa-solid fa-bookmark"></i>
+                      </button>
+                      <button @click="eliminarComida(item.id)" class="btn btn-danger">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div v-else>
-            <p class="text-center">No hay comidas no recomendadas disponibles.</p>
+            <div v-else>
+              <p class="text-center">No hay comidas recomendadas disponibles.</p>
+            </div>
           </div>
         </div>
+
+        <!-- Columna de Comida No Recomendada -->
+        <div class="col-md-6">
+          <div class="not-recommended-food">
+            <h2 class="text-center">Comida no recomendada</h2>
+            <div v-if="unrecomendedFood.length > 0">
+              <div class="card-deck">
+                <div v-for="(item, index) in unrecomendedFood" :key="index" class="card mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <!-- <p class="card-text">Hora: {{ item.time }}</p> -->
+                    <p class="card-text">Calorías: {{ item.calories }}</p>
+                    <div class="d-flex align-items-center">
+                      <button @click="guardarComidaEnPerfil(item.id)" class="btn btn-success m-2">
+                        <i v-if="!comidasGuardadas.includes(item.id)" class="fa-regular fa-bookmark"></i>
+                        <i v-else class="fa-solid fa-bookmark"></i>
+                      </button>
+                      <button @click="eliminarComida(item.id)" class="btn btn-danger"><i
+                          class="fa-solid fa-trash"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <p class="text-center">No hay comidas no recomendadas disponibles.</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>
+
   </div>
 </template>
 
 
 
 <style scoped>
+/* #h{
+
+  margin-bottom: 10%;
+}
+.milky {
+  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;;
+  text-transform: uppercase;
+  display: block;
+  font-size: 92px;
+  color: #f1ebe5;
+  text-shadow: 0 8px 9px #c4b59d, 0px -2px 1px #fff;
+  font-weight: bold;
+  letter-spacing: -4px;
+  text-align: center;
+  background: linear-gradient(to bottom, #ece4d9 0%,#e9dfd1 100%);
+  position: absolute;
+  padding: 100px 200px;
+  top: 18%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 20px;
+
+} */
+
+.banner {
+  width: 100vw;
+  /* Ancho completo de la ventana */
+  overflow: hidden;
+  /* Para que la imagen no tenga scroll horizontal */
+}
+
+
+.banner img {
+  width: 100%;
+  height: 500px !important;
+  object-fit: cover;
+  /* Para que la imagen cubra todo el contenedor */
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.header-txt {
+  width: 50%;
+  padding-right: 35px;
+}
+
+.header-txt h1 {
+  font-size: 50px;
+  line-height: 70px;
+  font-weight: 400;
+  color: #303030;
+  margin-bottom: 18px;
+}
+
+.header-txt p {
+  font-size: 16px;
+  color: #545454;
+  margin-bottom: 100px;
+}
+
+
+
 body {
   font-family: 'Montserrat', sans-serif;
   background-color: #f8f9fa;
   font-size: 16px;
   /* Ajusta el tamaño de la fuente según tus preferencias */
+}
+
+h1 {
+  font-family: Futura, sans-serif;
+  animation: fadeInUp 2s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /*Estilo De Lista*/
@@ -588,7 +714,7 @@ body {
 .recommended-food,
 .not-recommended-food {
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: #06472199;
   /* Color de fondo */
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -600,13 +726,14 @@ body {
   margin-bottom: 15px;
   font-size: 1.5em;
   /* Tamaño de fuente */
-  color: #009640;
+  color: #ffffff;
+  font-weight: 900;
   /* Color del encabezado */
 }
 
 .recommended-food p,
 .not-recommended-food p {
-  color: #333;
+  color: #000000;
   /* Color del texto */
 }
 
@@ -637,6 +764,18 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 1em;
   /* Ajusta el tamaño de la fuente según tus preferencias */
+}
+
+/* .card-body p {
+  padding: 3px;
+} */
+.card-body h4 {
+  font-weight: bold;
+}
+
+.card-body h5 {
+  font-weight: 500;
+  padding: 3px;
 }
 
 .container {
@@ -704,13 +843,31 @@ form {
   box-sizing: border-box;
 }
 
+.me-2 {
+  font-weight: 700;
+  background-color: #ff9100 !important;
+  padding: 16px 60px !important;
+  margin-bottom: 6%;
+}
+
+.bts {
+  background-color: #033f1c84;
+  padding: 12px 70px;
+  border-radius: 25px;
+}
+.bts.container{
+  padding: 24px 70px;
+}
+
 .btn-primary {
-  background-color: #009640;
+  background-color: #298851;
   /* Verde */
-  color: #fff;
+  font-weight: 600;
+  /* box-shadow: #0000004b; */
+  color: #ffffff;
   border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
+  padding: 8px 80px;
+  border-radius: 25px;
   cursor: pointer;
 }
 
@@ -749,7 +906,7 @@ form {
 }
 
 .card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.57);
   /* Sombra más pronunciada al pasar el mouse */
 }
 </style>

@@ -556,6 +556,8 @@ header are in the CalendarViewHeader component.
 	max-height: 100%;
 	overflow-x: hidden;
 	overflow-y: hidden;
+	border-radius: 10px;
+	border: 2px solid #01963f;
 }
 
 .cv-wrapper,
@@ -627,6 +629,7 @@ header are in the CalendarViewHeader component.
 	width: 100%;
 	overflow-y: auto;
 	-ms-overflow-style: none;
+	
 }
 
 .cv-weekdays {
@@ -708,14 +711,20 @@ _:-ms-lang(x),
 	user-select: none;
 }
 
+.cv-day {
+    display: grid;
+    place-items: center;
+
+}
+
+
 .cv-item {
 	text-align: center;
 	position: absolute;
 	white-space: nowrap;
 	overflow: hidden;
 	color: rgb(255, 255, 255);
-	background-color: #019640;
-	/* border-color: #019640; */
+	background-color: #FF9F0D;
 	border-radius: 10px;
 	border-width: 1px;
 	/* Restore user's direction setting (overridden for week) */
@@ -749,7 +758,7 @@ _:-ms-lang(x),
 .cv-header-day,
 .cv-day-number,
 .cv-item {
-	padding: 0.1em;
+	padding: 0.2em;
 }
 
 /* Allows emoji icons or labels (such as holidays) to be added more easily to specific dates by having the margin set already. */
