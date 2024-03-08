@@ -13,7 +13,7 @@
           </div>
           <div v-if="isUserPremium">
             <router-link to="/usuario/JnmQZTUrzqd6V3vWFHq4wCNPMLS2/chat" class="btn btn-primary">
-              Chat privado con Nutricionista
+              Chat privado con Nutritrack
             </router-link>
           </div>
         </div>
