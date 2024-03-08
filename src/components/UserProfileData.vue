@@ -38,10 +38,10 @@ const calculateAge = (birthday) => {
       <dd class="mb-2">
         <img v-if="user && user.photoURL" :src="user.photoURL" alt="User Avatar" />
         <span v-else-if="user.gender === 'Masculino'" class="icon-container text-center">
-          <img src="../img/perfil/hombre.png" alt="User Avatar" style="width: 200px; height: 200px;" />
+          <img src="../img/perfil/hombre.png" alt="User Avatar" style="width: auto; height: auto;" />
         </span>
         <span v-else-if="user.gender === 'Femenino'" class="icon-container text-center">
-          <img src="../img/perfil/mujer.png" alt="User Avatar" style="width: 200px; height: 200px;" />
+          <img src="../img/perfil/mujer.png" alt="User Avatar" style="width: auto; height: auto;" />
         </span>
         <span v-else class="icon-container text-center">
           <i class="fa-solid fa-user" style="font-size: 64px;"></i>
@@ -102,26 +102,28 @@ const calculateAge = (birthday) => {
 <style scoped>
 .user-profile-container {
   display: flex;
+  justify-content: center;
+  align-items: flex-start;
   padding: 20px;
   border-radius: 10px;
 }
 
+.user-avatar-container {
+  flex: 0 0 auto;
+  margin-right: 20px;
+}
+
 .user-avatar {
+  height: 100px;
   max-width: 100px;
   border-radius: 50%;
 }
 
 .user-details-container {
-  margin-left: 20px;
-}
-
-.user-name {
-  font-size: 1.5em;
-  margin-bottom: 10px;
+  flex: 1 1 auto;
 }
 
 .user-info-container {
-  width: 100%;
   background-color: #262928;
   border: 1px solid #ddd;
   color: #fff;
@@ -136,13 +138,36 @@ const calculateAge = (birthday) => {
   margin-bottom: 4px;
 }
 
+.user-info-container dd {
+  margin-bottom: 10px;
+}
+
 @media (max-width: 767px) {
+  .user-avatar-container {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .user-details-container {
+    text-align: center;
+  }
+
   .user-profile-container {
     flex-direction: column;
+    align-items: center;
   }
 
   .user-avatar {
-    margin-bottom: 10px;
+    height: 80px !important;
+    max-width: 80px;
+  }
+
+  .user-info-container dt {
+    font-size: 20px;
+  }
+
+  .user-info-container dd {
+    font-size: 16px;
   }
 }
 </style>

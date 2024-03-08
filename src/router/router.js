@@ -10,7 +10,6 @@ import Premium from '../pages/Premium.vue';
 import PrivateChat from "../pages/PrivateChat.vue";
 import FoodSave from '../pages/FoodSave.vue';
 import UserTable from '../pages/UserTable.vue';
-import Panel from '../pages/Panel.vue';
 import Chekout from '../pages/Chekout.vue';
 import UserProfileView from '../pages/UserProfileView.vue';
 import UserProfileEdit from '../pages/UserProfileEdit.vue';
@@ -30,7 +29,6 @@ const routes = [
     { path: '/soporte',         component: Support, },
     { path: '/premium',         component: Premium, },
     { path: '/chekout',         component: Chekout, },    
-    { path: '/panel',           component: Panel, },
     { path: '/success',         component: Success },
     { path: '/failure',         component: Failure },
     { path: '/pending',         component: Pending },

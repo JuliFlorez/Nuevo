@@ -300,6 +300,7 @@ export default {
   background-color: #0056b3;
 }
 
+
 @media only screen and (max-width: 320px) {
 
   .user-table th,

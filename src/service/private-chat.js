@@ -63,7 +63,6 @@ async function getPrivateChatDocument({user1, user2}) {
     const doc = getFromDocsCache({user1, user2});
 
     if(doc) {
-        console.log('[private-chats.js] Returned from cache');
         return doc;
     }
 

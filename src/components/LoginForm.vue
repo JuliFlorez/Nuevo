@@ -61,9 +61,7 @@ const showNotificationToast = (message) => {
 };
 
 const setNotification = (data) => {
-    console.log('Data recibida en setNotification:', data); 
     notification.value = { ...data };
-    console.log('Valor de notification.value:', notification.value); 
     if (notification.value.message) {
         showNotificationToast(notification.value.message);
     }

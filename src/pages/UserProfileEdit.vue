@@ -21,12 +21,10 @@ export default {
 
     const handleSubmit = async () => {
       try {
-        console.log("UserID:", userId);
-        console.log("UserData:", userData.value);
         
         if (userId && userData.value && userData.value.id) {
-          await editUserProfile(userId, userData.value); // Envía los datos actualizados del usuario al servicio
-          localRouter.push({ name: 'user-profile', params: { userId: userId } }); // Redirige a la vista del perfil
+          await editUserProfile(userId, userData.value); 
+          localRouter.push({ name: 'user-profile', params: { userId: userId } }); 
         } else {
           console.error("ID de usuario, datos de usuario o datos de autenticación indefinidos.");
         }
@@ -43,7 +41,6 @@ export default {
     onMounted(async () => {
       try {
         userData.value = await getUserProfileById(userId);
-        console.log("Datos recibidos en UserProfileEdit:", userData.value);
         await nextTick();
       } catch (error) {
         console.error("Error al obtener el perfil de usuario:", error);

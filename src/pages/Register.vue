@@ -38,7 +38,6 @@ export default {
       try {
         const user = await register({ email, password, displayName, height, weight, birthday, gender, goal });
         this.form.displayName = displayName;
-        console.log("Nombre de usuario:", displayName);
 
         this.$router.push({ path: '/' });
 

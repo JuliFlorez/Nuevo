@@ -23,7 +23,6 @@ export async function calendarSave(calendarData) {
 
   const userId = user.uid;
   const userCalendarsRef = collection(db, `users/${userId}/calendars`);
-  console.log('userCalendarsRef', userCalendarsRef); 
   return addDoc(userCalendarsRef, {
     ...calendarData,
     created_at: serverTimestamp(),
@@ -66,13 +65,11 @@ export async function calendarUpdate( calendarId, newData) {
   }
   const userId = user.uid;
 
-  console.log("Updating calendar with ID:", calendarId);
   const userCalendarsRef = collection(db, `users/${userId}/calendars`);
   const calendarDocRef = doc(userCalendarsRef, calendarId);
 
   try {
     await setDoc(calendarDocRef, newData, { merge: true });
-    console.log(`Calendar with ID ${calendarId} successfully updated in the database.`);
   } catch (error) {
     console.error(`Error updating calendar with ID ${calendarId}:`, error);
     throw error; 
@@ -91,7 +88,6 @@ export async function calendarDelete(calendarId) {
 
   try {
     await deleteDoc(userCalendarsRef);
-    console.log(`Calendar with ID ${calendarId} successfully deleted from database.`);
   } catch (error) {
     console.error("Error deleting calendar:", error);
     throw error; 

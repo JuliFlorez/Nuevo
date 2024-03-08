@@ -36,10 +36,8 @@ const createPreference = async (orderData) => {
     });
 
     const data = await response.json();
-    console.log("Preferencia creada:", data); 
     return data;
   } catch (error) {
-    console.error("Error al crear la preferencia:", error);
     throw error;
   }
 };
@@ -75,52 +73,59 @@ const handleCheckoutClick = async () => {
     };
 
     const preference = await createPreference(orderData);
-    console.log("Preferencia obtenida:", preference); 
     createCheckoutButton(preference.id);
     showCheckoutButton.value = false;
   } catch (error) {
-    console.error("Error al manejar el checkout:", error); 
     alert("error :(");
   }
 };
 </script>
 <template>
-  <div class="d-flex justify-content-between">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Funciones Gratuitas</h5>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Seguimiento básico de tu ingesta diaria</li>
-          <li class="list-group-item"><span class="rojo">X</span> Acceso ilimitado a recetas premium</li>
-          <li class="list-group-item"><span class="rojo">X</span> Seguimiento avanzado de tu progreso</li>
-          <li class="list-group-item"><span class="rojo">X</span> Asesoramiento personalizado de nutricionistas</li>
-        </ul>
-        <a href="#" class="btn btn-secondary mt-3">¡Explora Gratis!</a>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">Funciones gratuitas</h2>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">Seguimiento básico de tu ingesta diaria</li>
+              <li class="list-group-item"><span class="rojo">X</span> Acceso ilimitado a recetas premium</li>
+              <li class="list-group-item"><span class="rojo">X</span> Seguimiento avanzado de tu progreso</li>
+              <li class="list-group-item"><span class="rojo">X</span> Asesoramiento personalizado de nutricionistas</li>
+            </ul>
+            <a href="#" class="btn btn-secondary mt-3">¡Explora gratis!</a>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="card premium-card">
-      <div class="card-body">
-        <h5 class="card-title">Ventajas Premium</h5>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item"><span class="plus">+</span> Acceso ilimitado a recetas premium</li>
-          <li class="list-group-item"><span class="plus">+</span>Seguimiento avanzado de tu progreso</li>
-          <li class="list-group-item"><span class="plus">+</span>Asesoramiento personalizado de nutricionistas</li>
-        </ul>
-        <router-link to="/Chekout" class="btn btn-success mt-3">Proba premium</router-link>
-        <img src="" alt="">
-        <div id="wallet_container"></div>
+      <div class="col-sm-12 col-md-6">
+        <div class="card premium-card">
+          <div class="card-body">
+            <h2 class="card-title">Ventajas premium</h2>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><span class="plus">+</span> Acceso ilimitado a recetas premium</li>
+              <li class="list-group-item"><span class="plus">+</span> Seguimiento avanzado de tu progreso</li>
+              <li class="list-group-item"><span class="plus">+</span> Asesoramiento personalizado de nutricionistas</li>
+            </ul>
+            <router-link to="/Chekout" class="btn btn-success mt-3">Proba premium</router-link>
+            <img src="" alt="">
+            <div id="wallet_container"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
 </template>
+
 
 <style scoped>
 .card {
-  width: 48%;
+  width: 100%;
   margin: 20px 0;
 }
-
+.card-title{
+  font-weight: 900;
+  text-align: center;
+}
 .premium-card {
   border: 1px solid #FFD700;
 }
@@ -136,5 +141,27 @@ const handleCheckoutClick = async () => {
 
 .btn {
   width: 100%;
+}
+
+.row{
+  padding: 0;
+  margin: 0;
+}
+
+@media (max-width: 500px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+  }
+  .row {
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+  }
+  .card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
 }
 </style>

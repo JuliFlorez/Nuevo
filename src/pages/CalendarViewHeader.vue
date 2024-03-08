@@ -142,4 +142,17 @@ const goToCurrentDate = (): void => {
 	position: absolute;
 	margin-left: 63%;
 }
+
+@media screen and (max-width: 500px) {
+.nextYear{
+	display: none;
+}
+
+.previousYear {
+	display: none;
+}
+.currentDate{
+	display: none;
+}
+}
 </style>

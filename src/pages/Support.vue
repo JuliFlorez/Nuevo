@@ -1,8 +1,6 @@
 <template>
 
   <div class="container my-5">
-    <!-- <h1 class="texto-comidas text-center mb-4">Preguntas Frecuentes</h1> -->
-
 
     <div class="header-content container">
       <div class="header-info">
@@ -36,18 +34,6 @@
         <p>{{ faq.answer }}</p>
       </div>
     </div>
-    <!-- <div v-if="!isUserPremium">
-      <h3>Habla con un nutricionista ahora, solo para premiums!</h3>
-    </div>
-    <div v-if="isUserPremium">
-      {{ console.log('Mostrando enlace premium porque isUserPremium es true') }}
-      <router-link to="/usuario/JnmQZTUrzqd6V3vWFHq4wCNPMLS2/chat" class="premium-link">
-        <h3 class="premium-link">Chat privado con Nutricionista</h3>
-      </router-link>
-    </div> -->
-
-    <!-- Imágenes centradas -->
-
 
     <div class="text-center my-4 img-tuerca">
       <img src="../img/soporte-svg.jpg" alt="">
@@ -55,23 +41,22 @@
       <img src="../img/soporte-svg.jpg" alt="">
       <img src="../img/soporte-svg.jpg" alt="">
       <img src="../img/soporte-svg.jpg" alt="">
-      <img src="../img/soporte-svg.jpg" alt=""> 
+      <img src="../img/soporte-svg.jpg" alt="">
     </div>
 
 
-
-    <!-- Mapa -->
     <div class="embed-responsive embed-responsive-16by9 text-center mt-4 ubication-map">
       <iframe class="embed-responsive-item"
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3283.9928441539078!2d-58.398575124771355!3d-34.604342457530436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccaea670d4e67%3A0x2198c954311ad6d9!2sDa%20Vinci%20%7C%20Primera%20Escuela%20de%20Arte%20Multimedial!5e0!3m2!1ses!2sar!4v1700851026217!5m2!1ses!2sar"
-        width="600" height="400" style="max-width: 100%;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        width="600" height="400" style="max-width: 100%;" allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
   </div>
 </template>
 
 <script>
 import { auth, db } from '../service/firebase';
-import { getUserProfileById } from '../service/user'; // Asegúrate de que la ruta sea correcta
+import { getUserProfileById } from '../service/user'; 
 
 export default {
   data() {
@@ -80,7 +65,7 @@ export default {
         {
           question: '¿Cómo puedo crear una cuenta en su plataforma?',
           answer: 'Puedes crear una cuenta haciendo clic en "Registrarse" en la esquina superior derecha de la página de inicio. Luego, sigue las instrucciones para completar el proceso de registro.',
-          showAnswer: true, // Abierto por defecto
+          showAnswer: true,
         },
         {
           question: 'Olvidé mi contraseña. ¿Cómo puedo restablecerla?',
@@ -97,10 +82,10 @@ export default {
     };
   },
   mounted() {
-    this.checkUserPremiumStatus(); // Verifica el estado premium cuando el componente se monta
+    this.checkUserPremiumStatus(); 
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.checkUserPremiumStatus(); // Verifica el estado premium cuando cambia la autenticación
+        this.checkUserPremiumStatus(); 
       }
     });
   },
@@ -114,7 +99,6 @@ export default {
           this.isUserPremium = userProfile.premium;
         }
       } catch (error) {
-        console.error('Error al verificar el estado premium:', error);
       }
     }
 
@@ -124,7 +108,6 @@ export default {
         faq.showAnswer = index === i ? !faq.showAnswer : false;
       });
     },
-    // ... otros métodos que puedas necesitar ...
   },
 };
 </script>
@@ -157,7 +140,6 @@ body {
 .header-info {
   display: flex;
   align-items: center;
-  /* margin-top: 100px; */
 }
 
 .header-txt {
@@ -214,14 +196,13 @@ h3 {
 .arrow-down::before,
 .arrow-up::before {
   content: '\25BC';
-  /* Flecha hacia abajo en Unicode */
   display: inline-block;
   margin-left: 5px;
 }
 
 .arrow-up::before {
   content: '\25B2';
-  /* Flecha hacia arriba en Unicode */
+
 }
 
 .open .answer {
@@ -247,13 +228,16 @@ h3 {
   transition: all .3s ease 0s;
 }
 
-/* Estilo para las imágenes */
 .icon-image {
   max-width: 80px;
-  /* Ajusta el tamaño máximo de las imágenes */
   margin: 0 10px;
-  /* Ajusta la separación entre las imágenes */
 }
+
+.card-header {
+    color: white;
+    background-color: #019640 !important;
+}
+
 
 @media (max-width: 600px) {
   .header-txt {
@@ -267,7 +251,7 @@ h3 {
   .header-txt h1 {
     text-align: center;
     width: 100%;
-    padding: 0 40px;
+    padding: 0 20px;
   }
 
   .header-img {
@@ -277,5 +261,6 @@ h3 {
   .container {
     padding: 0 10px;
   }
+
 }
 </style>

@@ -111,10 +111,6 @@ export async function register({ email, password, displayName, height, weight, b
             fullProfileLoaded: true,
         });
 
-        console.log("Usuario registrado en Firebase:", userCredentials.user);
-
-        console.log("Datos del perfil almacenados en Firestore:", userProfileData);
-
         return userCredentials.user;
 
     } catch (error) {
@@ -165,7 +161,6 @@ export async function editUser({ displayName, height, weight, birthday, gender, 
         if (gender != null) data.gender = gender;
         if (goal != null) data.goal = goal;
 
-        console.log("Datos a actualizar:", JSON.stringify(data));
 
         const promiseAuth = updateProfile(auth.currentUser, data);
         const promiseProfile = editUserProfile(userData.id, data);

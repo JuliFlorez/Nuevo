@@ -21,8 +21,12 @@ function setNotification(data) {
   }
 }
 
+function closeOffcanvas(event) {
 
-
+  if (!event.target.closest('.offcanvas-body')) {
+    document.getElementById('offcanvasNavbar').classList.remove('show');
+  }
+}
 
 provide('notification', {
   notification: readonly(notification),
@@ -58,7 +62,9 @@ function useLogout() {
       <div class="sidebar offcanvas offcanvas-start m-2 containerH" tabindex="-1" id="offcanvasNavbar"
         aria-labelledby="offcanvasNavbarLabel">
         <div class="offcanvas-header text-white border-bottom">
-          <h5 class="offcanvas-title custom-title" id="offcanvasNavbarLabel">NutriTrack</h5>
+          <h5 class="offcanvas-title custom-title" id="offcanvasNavbarLabel">
+            <router-link class="nutriTitulo" to="/">NutriTrack</router-link>
+          </h5>
           <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"
             aria-label="Close"></button>
         </div>
@@ -189,6 +195,10 @@ nav {
   font-size: medium;
 }
 
+.nutriTitulo {
+  color: white;
+}
+
 .logo {
   width: 80px;
   height: auto;
@@ -240,8 +250,8 @@ nav {
 .btn-logout {
   background-color: #dc3545;
   color: #fff;
-  border: none;
-  border-radius: 20px;
+  border: 1px solid #dc3545;
+  border-radius: 16px;
   padding: 8px 16px;
   font-size: 16px;
   transition: all 0.3s ease;
@@ -256,9 +266,9 @@ nav {
   margin: 10px;
   color: #fff;
   background-color: transparent;
-  border-color: #fff;
+  border: 1px solid #fff;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 16px;
   font-weight: bold;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -272,10 +282,10 @@ nav {
   display: inline-flex;
   align-items: center;
   background-color: transparent;
-  border: 2px solid #ff9100;
+  border: 1px solid #ff9100;
   color: #ff9100;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 16px;
   position: relative;
   overflow: hidden;
   transition: color 0.3s, border-color 0.3s;
@@ -350,7 +360,7 @@ nav {
   font-size: 16px;
   font-weight: bold;
   text-decoration: none;
-  border-radius: 50px;
+  border-radius: 16px;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -456,7 +466,10 @@ nav {
 
 @media(max-width: 991px) {
 
-
+  .nutriTitu{
+    color: white;
+    text-decoration: none;
+  }
   .sidebar.offcanvas {
     left: -8px;
     right: auto;
@@ -501,9 +514,7 @@ nav {
   .premium-btn {
     color: #fff;
     background-color: transparent;
-    border: 2px solid #FF9F0D;
-    padding: 8px 16px;
-    border-radius: 25px;
+    border: 1px solid #FF9F0D;
     transition: all 0.3s;
     text-align: center;
     width: fit-content;

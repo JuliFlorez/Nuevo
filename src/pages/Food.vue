@@ -59,10 +59,8 @@ export default {
 
         try {
           const userProfile = await getUserProfileById(user.uid);
-          console.log("User profile:", userProfile);
 
           self.state.userGoal = userProfile.goal;
-          console.log("User's goal:", self.state.userGoal);
 
           self.loadCategoriesBasedOnTime();
 
@@ -95,7 +93,6 @@ export default {
 
   methods: {
     async saveFood(newFoodData) {
-      console.log("Saving food to Firebase:", newFoodData);
       newFoodData.created_at = new Date();
 
       if (!newFoodData.category) {
@@ -107,7 +104,6 @@ export default {
       try {
         const db = getFirestore();
         const docRef = await addDoc(collection(db, "food"), newFoodData);
-        console.log("Document written with ID: ", docRef.id);
         await this.foodsaveSubscribeToChanges();
         alert('Comida guardada correctamente.');
       } catch (error) {
@@ -117,12 +113,10 @@ export default {
     },
 
     addFood() {
-      console.log("Adding new food...");
-      console.log("Is Recommended:", this.newFood.isRecommended);
 
       $('#exampleModal').modal('hide');
 
-      if (this.selectedTime && this.newFood.metaSeleccionada) { // Verifica que se haya seleccionado una meta
+      if (this.selectedTime && this.newFood.metaSeleccionada) {
         const newFoodData = {
           name: this.newFood.name,
           calories: this.newFood.calories,
@@ -131,11 +125,10 @@ export default {
           time: this.selectedTime,
           isRecommended: this.newFood.isRecommended,
           category: this.selectedTime.toLowerCase(),
-          goal: this.newFood.metaSeleccionada // Agrega la meta seleccionada al objeto de datos
+          goal: this.newFood.metaSeleccionada
         };
         this.saveFood(newFoodData);
         this.resetNewFood();
-        // Luego, abre el nuevo modal
         $('#exampleModal').modal('show');
         alert('Comida guardada correctamente.');
       } else {
@@ -148,7 +141,6 @@ export default {
 
     async guardarComidaEnPerfil(comidaId) {
       try {
-        console.log("Guardando comida en el perfil...");
         const auth = getAuth();
         const usuario = auth.currentUser;
 
@@ -177,7 +169,6 @@ export default {
         await addDoc(userfoodsaveRef, comidaData);
 
         await this.foodsaveSubscribeToChanges();
-        console.log("Comida guardada en perfil:", comidaId);
 
         this.comidasSeleccionadas.push(comidaId);
 
@@ -216,7 +207,6 @@ export default {
 
     async eliminarComidaDePerfil(comidaId) {
       try {
-        console.log("Eliminando comida del perfil...");
         const auth = getAuth();
         const usuario = auth.currentUser;
 
@@ -231,7 +221,6 @@ export default {
         const comidaDocRef = doc(userfoodsaveRef, comidaId);
         await deleteDoc(comidaDocRef);
 
-        console.log("Comida eliminada del perfil:", comidaId);
         this.comidasGuardadas = this.comidasGuardadas.filter(comida => comida.id !== comidaId);
         alert('Comida eliminada del perfil correctamente.');
       } catch (error) {
@@ -248,7 +237,6 @@ export default {
         const usuario = auth.currentUser;
 
         if (!usuario) {
-          console.log('El usuario no está autenticado');
           return;
         }
 
@@ -266,7 +254,6 @@ export default {
               };
               comidasGuardadas.push(comida);
             });
-            console.log("Comidas guardadas:", comidasGuardadas);
             this.comidasGuardadas = comidasGuardadas;
           } catch (error) {
             console.error("Error al obtener las comidas guardadas:", error);
@@ -278,7 +265,6 @@ export default {
     },
 
     getSelectedCategories() {
-      console.log("Getting selected categories...");
       let categories = [];
       const categoryKeys = Object.keys(this.newFood.category);
 
@@ -292,7 +278,6 @@ export default {
     },
 
     getSelectedNoRecomendadoCategories() {
-      console.log("Getting selected 'No Recomendado' categories...");
       let noRecomendadoCategories = [];
       const noRecomendadoKeys = Object.keys(this.newFood.noRecomendado);
 
@@ -305,12 +290,10 @@ export default {
       return noRecomendadoCategories;
     },
     formatCategories(categories) {
-      console.log("Formatting categories...");
       return categories.join(', ');
     },
 
     setRecomendado(recommended) {
-      console.log("Setting recommended state...");
       this.newFood.isRecommended = recommended;
 
       const selectedCategory = this.selectedTime.charAt(0).toUpperCase() + this.selectedTime.slice(1);
@@ -338,7 +321,6 @@ export default {
     },
 
     filterFood(type) {
-      console.log("Filtering food by type and user's goal...");
       this.filteredFood = this.food.filter(item => {
         const isInCategory = item.time.toLowerCase().includes(type.toLowerCase());
         const isMatchingGoal = item.goal.toLowerCase() === this.state.userGoal.toLowerCase();
@@ -349,11 +331,9 @@ export default {
 
     async eliminarComida(comidaId) {
       try {
-        console.log("Eliminando comida...");
         const db = getFirestore();
         const comidaRef = doc(db, 'food', comidaId);
         await deleteDoc(comidaRef);
-        console.log("Comida eliminada:", comidaId);
         this.food = this.food.filter(item => item.id !== comidaId);
         alert('Comida eliminada correctamente.');
       } catch (error) {
@@ -379,16 +359,19 @@ export default {
     <div class="header-info">
       <div class="header-txt">
         <h1 class="text-center">Bienvenido a comidas</h1>
-        <p class="text-center">En esta sección buscamos ayudarte en tu alimentación dependiendo de la meta que hayas elegido, además te recomendamos el momento del día en el que la puedes consumir. Recuerda que estas comidas son solo recomendaciones, puedes consumir lo que creas correcto.</p>
+        <p class="text-center">En esta sección buscamos ayudarte en tu alimentación dependiendo de la meta que hayas
+          elegido, además te recomendamos el momento del día en el que la puedes consumir. Recuerda que estas comidas
+          son solo recomendaciones, puedes consumir lo que creas correcto.</p>
       </div>
       <div class="d-flex flex-column flex-md-row justify-content-md-end mb-3">
         <!-- Botones alineados a la derecha en dispositivos medianos y grandes -->
         <button v-if="mostrarBotonModal" type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
-            data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Añadir
-            <i class="fa-solid fa-plus"></i>
-          </button>
+          data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Añadir
+          <i class="fa-solid fa-plus"></i>
+        </button>
 
-        <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Guardados <i class="fa-regular fa-bookmark"></i></button>
+        <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+          aria-controls="offcanvasRight">Guardados <i class="fa-regular fa-bookmark"></i></button>
       </div>
     </div>
 
@@ -414,8 +397,9 @@ export default {
       </div>
     </div>
 
+
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h2 class="modal-title fs-5" id="exampleModalLabel">Agregar Nueva Comida</h2>
@@ -564,24 +548,19 @@ export default {
 
 
 <style scoped>
-
-
 .banner {
   max-width: 100vw;
   max-height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* Ancho completo de la ventana */
   overflow: hidden;
-  /* Para que la imagen no tenga scroll horizontal */
 }
 
 
 .banner img {
   max-width: 100%;
   object-fit: cover;
-  /* Para que la imagen cubra todo el contenedor */
 }
 
 .header-info {
@@ -632,7 +611,6 @@ body {
   font-family: 'Montserrat', sans-serif;
   background-color: #f8f9fa;
   font-size: 16px;
-  /* Ajusta el tamaño de la fuente según tus preferencias */
 }
 
 h1 {
@@ -652,14 +630,12 @@ h1 {
   }
 }
 
-/*Estilo De Lista*/
 .list-group {
   margin-bottom: 20px;
 }
 
 .modal {
   z-index: 1060;
-  /* O un valor mayor que el z-index del modal-backdrop */
 }
 
 .list-group-item {
@@ -679,35 +655,27 @@ h1 {
 .not-recommended-food {
   padding: 20px;
   background-color: #06472199;
-  /* Color de fondo */
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  /* Sombra */
 }
 
 .recommended-food h2,
 .not-recommended-food h2 {
   margin-bottom: 15px;
   font-size: 1.5em;
-  /* Tamaño de fuente */
   color: #ffffff;
   font-weight: 900;
-  /* Color del encabezado */
 }
 
 .recommended-food p,
 .not-recommended-food p {
   color: #000000;
-  /* Color del texto */
 }
 
 .text-center {
   text-align: center;
-  /* Centrar texto */
 }
 
-
-/* Estilos para los encabezados h1 */
 .texto-comidas {
   font-family: 'Montserrat', sans-serif !important;
   font-weight: bold !important;
@@ -716,10 +684,8 @@ h1 {
   border-radius: 50px !important;
   text-align: center !important;
   font-size: 3em !important;
-  /* Ajusta el tamaño de la fuente según tus preferencias */
 }
 
-/* Estilos para los demás elementos de texto */
 .form-label,
 .btn,
 .checkbox-inline,
@@ -727,12 +693,8 @@ h1 {
 .card-body p {
   font-family: 'Montserrat', sans-serif;
   font-size: 1em;
-  /* Ajusta el tamaño de la fuente según tus preferencias */
 }
 
-/* .card-body p {
-  padding: 3px;
-} */
 .card-body h4 {
   font-weight: bold;
 }
@@ -743,7 +705,6 @@ h1 {
 }
 
 .container {
-  /* max-width: 600px; */
   margin: auto;
   padding: 20px;
 }
@@ -752,23 +713,15 @@ form {
   text-align: center !important;
   background-color: #ffffff;
   padding: 20px;
-  /* Ajusta el tamaño del padding según tus preferencias */
   border-radius: 10px;
-  /* Bordes redondeados */
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  /* Sombra sutil */
   margin-bottom: 20px;
-  /* Ajusta el margen inferior según tus preferencias */
 }
 
 #calories.form-control {
   width: 60%;
-  /* Ajusta el ancho según tus preferencias */
   margin: 0 auto;
-  /* Centra el campo horizontalmente */
   display: block;
-  /* Asegura que ocupa todo el ancho disponible */
-
 }
 
 .form-label {
@@ -776,15 +729,11 @@ form {
   font-weight: bold;
 }
 
-/* Estilos para checkboxes */
 .checkbox-inline input {
   margin-right: 8px;
   appearance: none;
-  /* Elimina el estilo nativo del navegador */
   border: 2px solid #4CAF50;
-  /* Borde del checkbox */
   border-radius: 4px;
-  /* Bordes redondeados */
   width: 18px;
   height: 18px;
   cursor: pointer;
@@ -793,9 +742,7 @@ form {
 
 .checkbox-inline input:checked {
   background-color: #4CAF50;
-  /* Fondo cuando está seleccionado */
   border-color: #4CAF50;
-  /* Borde cuando está seleccionado */
 }
 
 .form-control {
@@ -820,7 +767,8 @@ form {
   border-radius: 25px;
   max-width: 100%;
 }
-.bts.container{
+
+.bts.container {
   padding: 24px 70px;
 }
 
@@ -830,9 +778,7 @@ form {
 
 .btn-primary {
   background-color: #298851;
-  /* Verde */
   font-weight: 600;
-  /* box-shadow: #0000004b; */
   color: #ffffff;
   border: none;
   padding: 8px 80px;
@@ -840,10 +786,8 @@ form {
   cursor: pointer;
 }
 
-/* Estilos para el botón de advertencia */
 .btn-warning {
   background-color: #FFC107;
-  /* Amarillo */
   color: #212529;
   border: none;
   padding: 12px 24px;
@@ -851,7 +795,6 @@ form {
   cursor: pointer;
 }
 
-/* Estilos para mensajes de error */
 .alert-danger {
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
@@ -860,10 +803,8 @@ form {
   padding: 10px;
   margin-top: 20px;
   text-align: center;
-  /* Centra el texto del mensaje de error */
 }
 
-/* Estilos para la lista de comidas */
 .row-cols-1>.col {
   margin-bottom: 20px;
 }
@@ -872,29 +813,45 @@ form {
   border: 1px solid #ddd;
   border-radius: 10px;
   transition: box-shadow 0.3s;
-  margin-bottom: 10px; /* Margen inferior entre tarjetas martina acordate de fijarte el offcanvas con esto y las tarjetas*/
+  margin-bottom: 10px;
 }
 
 .card:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.57);
-  /* Sombra más pronunciada al pasar el mouse */
 }
 
 
 .offcanvas {
-  background-color: #f8f9fa; /* Color de fondo del modal */
-  width: 300px; /* Ancho del modal */
+  background-color: #f8f9fa;
+  width: 300px;
 }
 
 .offcanvas-header {
-  background-color: #007bff; /* Color de fondo del encabezado */
-  color: white; /* Color del texto del encabezado */
+  background-color: #298851;
+  color: white;
 }
 
 .offcanvas-body {
-  padding: 20px; /* Espaciado interno del cuerpo del modal */
+  padding: 20px;
 }
 
+@media (max-width: 986px) {
+
+  .bts.container {
+    padding: 0;
+  }
+
+  .btn-group {
+    flex-direction: column;
+    padding: 0 !important;
+
+  }
+  .btn-primary {
+    padding: 2px !important;
+
+  }
+
+}
 
 @media (max-width: 680px) {
   .header-info {
@@ -910,15 +867,23 @@ form {
   }
 
   .me-2 {
-  padding:0;
+    padding: 0;
+
+  }
+
+  .bts.container {
+    padding: 0;
+  }
+
+  .btn-group {
+    flex-direction: column;
+    padding: 0 !important;
+
+  }
+
+  .btn-primary {
+    padding: 0;
+  }
 
 }
-
-.bts.container{
-  padding:0;
-}
-
-  
-}
-
 </style>

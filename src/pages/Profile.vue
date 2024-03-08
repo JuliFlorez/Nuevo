@@ -82,12 +82,7 @@ function useEditProfile(user) {
                 type: 'success',
             });
 
-            console.log('Editando perfil...');
-            console.log('Datos a actualizar:', editData.value);
-
-            // Aquí puedes agregar lógica adicional si es necesario
-
-            handleHideEdit(); // Oculta el formulario de edición y muestra el perfil
+            handleHideEdit(); 
         } catch (error) {
             console.error('Error al actualizar perfil:', error);
             setNotification({
@@ -235,8 +230,7 @@ function useAvatarEditForm(user) {
 
 <style scoped>
     .tituloPrincipal h1 {
-        font-size: 2.5rem; /* Tamaño de fuente */
-        margin-top: 1.5rem; /* Margen superior */
-        
+        font-size: 2.5rem; 
+        margin-top: 1.5rem; 
     }
 </style>
