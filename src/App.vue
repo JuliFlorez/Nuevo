@@ -1,9 +1,9 @@
 <script setup>
-
 import { useRouter } from 'vue-router';
 import { useAuth } from './composition/useAuth';
 import { logout } from './service/auth.js';
-import { ref, provide, readonly,onMounted } from 'vue';
+import { ref, provide, readonly } from 'vue';
+
 
 const { handleLogout } = useLogout();
 const { user } = useAuth();
@@ -21,6 +21,8 @@ function setNotification(data) {
     toast.show();
   }
 }
+
+
 
 
 provide('notification', {
@@ -41,33 +43,34 @@ function useLogout() {
   }
 }
 </script>
+
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container ">
-      <!-- Logo -->
-      <router-link to="/" class="navbar-brand">NutriTrack</router-link>
-      <!-- Toggle Btn -->
+    <div class="container">
       <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="offcanvas"
         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <!-- SideBar -->
-      <div class="sidebar offcanvas offcanvas-start m-2" tabindex="-1" id="offcanvasNavbar"
+
+        <a class="navbar-brand" href="#">
+          <img src="./img/nav/logo.webp" alt="" class="logo">
+        </a>
+
+      <div class="sidebar offcanvas offcanvas-start m-2 containerH" tabindex="-1" id="offcanvasNavbar"
         aria-labelledby="offcanvasNavbarLabel">
-        <!-- SideBar Header -->
         <div class="offcanvas-header text-white border-bottom">
-          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">NutriTrack</h5>
+          <h5 class="offcanvas-title custom-title" id="offcanvasNavbarLabel">NutriTrack</h5>
           <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"
             aria-label="Close"></button>
         </div>
-        <!-- SideBar Body -->
-        <div class="offcanvas-body d-flex flex-column flex-lg-row p-4 p-lg-0">
-              <ul class="navbar-nav d-flex justify-content-center align-items-center fs-5 flex-grow-1 pe-3">
-              <li class="nav-item mx-2">
-              <router-link class="nav-link" to="/Comida">Comidas</router-link>
-            </li>
+
+        <div class="offcanvas-body d-flex flex-column flex-lg-row p-4 p-lg-0 navGeneral">
+          <ul class="navbar-nav d-flex justify-content-center align-items-center fs-5 flex-grow-1 custom-nav">
             <li class="nav-item mx-2">
               <router-link class="nav-link" to="/Calendario">Calendario</router-link>
+            </li>
+            <li class="nav-item mx-2">
+              <router-link class="nav-link" to="/Comida">Comidas</router-link>
             </li>
             <li class="nav-item mx-2">
               <router-link class="nav-link" to="/Soporte">Soporte</router-link>
@@ -76,8 +79,6 @@ function useLogout() {
               <router-link class="nav-link" to="/Usuarios">Usuarios</router-link>
             </li>
           </ul>
-
-
 
           <div class="navbar-nav ms-auto">
             <template v-if="user.id !== null">
@@ -98,6 +99,7 @@ function useLogout() {
                 </form>
               </div>
             </template>
+
             <template v-else>
               <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center gap-3 botones m-2">
                 <router-link to="/registro" class="btn-custom">Registrarse</router-link>
@@ -110,6 +112,7 @@ function useLogout() {
       </div>
     </div>
   </nav>
+
 
 
   <div v-if="notification.message != null" class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -125,12 +128,11 @@ function useLogout() {
       </div>
     </div>
   </div>
-  
+
+
   <main>
     <router-view></router-view>
   </main>
-
-  <!-- FOOTER -->
 
   <footer class="footer">
     <div class="container">
@@ -138,25 +140,25 @@ function useLogout() {
         <div class="footer-links">
           <h4>NutriTrack</h4>
           <ul>
-            <li><a href="#">Nosotros</a></li>
-            <li><a href="#">Nuestros Servicios</a></li>
-            <li><a href="#">Politica De Privacidad</a></li>
+            <li><router-link to="/soporte#nosotros">Nosotros</router-link></li>
+            <li><router-link to="/soporte#servicios">Nuestros servicios</router-link></li>
+            <li><router-link to="/soporte#privacidad">Politica de privacidad</router-link></li>
           </ul>
         </div>
         <div class="footer-links">
           <h4>Usuario</h4>
           <ul>
-            <li><a href="#">¿No Podes Registrarte?</a></li>
-            <li><a href="#">¿No Podes Iniciar Seccion?</a></li>
-            <li><a href="#">Error En Mi Perfil</a></li>
+            <li><router-link to="/soporte#registrarte">¿No podes registrarte?</router-link></li>
+            <li><router-link to="/soporte#iniciar-sesion">¿No podes iniciar seccion?</router-link></li>
+            <li><router-link to="/soporte#error-perfil">Error en mi perfil</router-link></li>
           </ul>
         </div>
         <div class="footer-links">
           <h4>Ayuda</h4>
           <ul>
-            <li><a href="#">Preguntas</a></li>
-            <li><a href="#">Sistema Del Calendario</a></li>
-            <li><a href="#">Sistema De Comidas</a></li>
+            <li><router-link to="/soporte#preguntas-frecuentes">Preguntas Frecuentes</router-link></li>
+            <li><router-link to="/soporte#calendario">Sistema Del Calendario</router-link></li>
+            <li><router-link to="/soporte#comidas">Sistema De Comidas</router-link></li>
           </ul>
         </div>
         <div class="footer-links">
@@ -169,11 +171,11 @@ function useLogout() {
         </div>
       </div>
     </div>
+    
   </footer>
 </template>
 
 <style scoped>
-/*GENERAL*/
 * {
   margin: 0;
   padding: 0;
@@ -182,55 +184,43 @@ function useLogout() {
   list-style: none;
 }
 
-
-/*NAVBAR*/
 nav {
   font-size: medium;
 }
 
-/*LOGO*/
 .logo {
-  width: 15%;
+  width: 80px;
+  height: auto;
+  max-width: 80px;
   margin-bottom: 10px;
-  margin-right: 10px;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
 }
-
-
 
 .nav-link {
   position: relative;
-  /* Para posicionar la línea de abajo */
 }
 
 .nav-link::after {
   content: '';
-  /* Agrega un pseudo-elemento después del texto */
   position: absolute;
-  /* Lo posiciona en relación con el elemento padre */
   bottom: -2px;
-  /* Lo coloca debajo del texto */
   left: 0;
-  /* Lo posiciona a la izquierda del texto */
   width: 100%;
-  /* Establece su ancho al 100% del ancho del texto */
   height: 2px;
-  /* Establece la altura de la línea */
   background-color: #fff;
-  /* Color de la línea */
   transform-origin: left;
-  /* Establece el punto de transformación a la izquierda */
   transform: scaleX(0);
-  /* Escala la línea horizontalmente para que no sea visible inicialmente */
   transition: transform 0.3s ease;
-  /* Agrega una transición suave */
 }
 
 .nav-link:hover::after {
   transform: scaleX(1);
-  /* Escala la línea horizontalmente al 100% cuando se pasa el mouse */
 }
 
-
+.navbar-brand img {
+  max-width: 100%;
+  height: auto;
+}
 
 .imgNotification {
   margin: 4px;
@@ -251,7 +241,7 @@ nav {
   background-color: #dc3545;
   color: #fff;
   border: none;
-  border-radius: 25px;
+  border-radius: 20px;
   padding: 8px 16px;
   font-size: 16px;
   transition: all 0.3s ease;
@@ -285,7 +275,7 @@ nav {
   border: 2px solid #ff9100;
   color: #ff9100;
   padding: 8px 16px;
-  border-radius: 50px;
+  border-radius: 20px;
   position: relative;
   overflow: hidden;
   transition: color 0.3s, border-color 0.3s;
@@ -329,16 +319,12 @@ nav {
   width: 25px;
   height: 25px;
   margin-left: 5px;
-  /* Ajusta el margen izquierdo para separar la imagen del texto */
   opacity: 1;
-  /* Asegura que la imagen sea visible por defecto */
   transition: opacity 0.3s;
-  /* Agrega transición a la opacidad */
 }
 
 .neon-btn:hover .stars-img {
   opacity: 1;
-  /* Mantiene la imagen visible al pasar el mouse sobre el botón */
 }
 
 @keyframes neonStars {
@@ -360,31 +346,24 @@ nav {
   display: inline-block;
   padding: 8px 16px;
   background-color: #FFA500;
-  /* Color naranja */
   color: #fff;
   font-size: 16px;
   font-weight: bold;
   text-decoration: none;
   border-radius: 50px;
   transition: background-color 0.3s, color 0.3s;
-  /* Transición suave de color */
 }
 
 .btn-custom:hover {
   background-color: #fff;
-  /* Color naranja oscuro al pasar el mouse */
   color: #FFA500;
-  /* Color del texto al pasar el mouse */
 }
-
-
 
 .botones {
   margin: 10px;
   margin-top: -1px;
 }
 
-/*FOOTER*/
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -448,17 +427,68 @@ nav {
   background-color: #FF9F0D;
 }
 
-/*MEDIA*/
+@media only screen and (max-width: 1024px) {
+  .logo {
+  position: absolute;
+  top: 40%;
+  left: 5%;
+  transform: translate(-50%, -50%);
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand {
+  margin: -25px 0; /* Ajusta el valor según sea necesario */
+}
+
+}
+
+
 
 @media(max-width: 991px) {
+  .logo {
+    margin: 0 auto; /* Centra el logo horizontalmente */
+    display: block; /* Asegura que el logo sea un elemento de bloque */
+    position: relative; /* Agrega posición relativa para poder alinear */
+    left: 5%; /* Mueve el logo hacia la derecha */
+    bottom: 20px;
+    transform: translateX(-50%); /* Centra horizontalmente */
+  }
 
-  /*NAVBAR*/
-  .sidebar {
+  .sidebar.offcanvas {
+    left: -8px;
+    right: auto;
+    width: 50%;
+    height: 100%;
     background-color: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
   }
 
-  /*FOOTER*/
+  .btn-close {
+    margin-left: 65%;
+  }
+
+  .navbar-nav.ms-auto {
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .navbar-brand {
+    margin: 0 auto; /* Centra el logo horizontalmente */
+    text-align: center; /* Alinea el texto del logo al centro */
+  }
+
+  .custom-title {
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+  }
 
   .footer-row {
     text-align: center;
@@ -477,11 +507,8 @@ nav {
     border-radius: 25px;
     transition: all 0.3s;
     text-align: center;
-    /* Añadir alineación de texto */
     width: fit-content;
-    /* Ajustar el ancho al contenido */
     margin: 10px auto;
-    /* Centrar horizontalmente */
   }
 
   .premium-btn:hover {
@@ -489,18 +516,64 @@ nav {
     color: #fff;
   }
 
-  /* Centrar los botones en dispositivos móviles */
   .botones {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 10px;
-    /* Añadir margen superior */
   }
 
-  /* Ajustar el margen superior del botón de salida */
   .btn-logout {
     margin-top: 10px;
   }
 
-}</style>
+  .offcanvas-title {
+    font-weight: 120px;
+  }
+}
+
+@media (max-width: 767px) {
+
+  .logo {
+    width: 80px;
+    height: auto;
+    max-width: 80px;
+    margin-top: -9%;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+  }
+
+  .sidebar.offcanvas {
+    left: -8px;
+    right: auto;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-close {
+    margin-left: 60%;
+  }
+
+  .navbar-nav.ms-auto {
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+}
+
+@media (max-width: 426px) {
+  .logo {
+    margin: 0 auto; /* Centra el logo horizontalmente */
+    display: block; /* Asegura que el logo sea un elemento de bloque */
+    position: relative; /* Agrega posición relativa para poder alinear */
+    left: 10%; /* Mueve el logo hacia la derecha */
+    transform: translateX(-50%); /* Centra horizontalmente */
+    bottom: 20px; /* Ajusta la posición vertical del logo */
+  }
+}
+
+
+</style>
