@@ -251,7 +251,7 @@ export default {
             <option value="">Seleccione una opción</option>
             <option value="Volumen">Volumen</option>
             <option value="Deficit">Déficit calórico</option>
-            <option value="Definición">Definición</option>
+            <option value="Definicion">Definición</option>
           </select>
         </div>
 

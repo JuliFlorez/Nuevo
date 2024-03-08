@@ -10,7 +10,7 @@ export default {
                 card: '',
                 expiry: '',
                 cvc: '',
-                amount: 10000
+                amount: "Gratis"
             },
             successMessage: '',
             errors: {
@@ -29,7 +29,7 @@ export default {
                 try {
                     await this.updateMembership();
                     // Configura el mensaje de éxito
-                    this.successMessage = "Pago realizado con éxito. ¡Membresía actualizada!";
+                    this.successMessage = "Prueba realizado con éxito. ¡Membresía actualizada!";
                 } catch (error) {
                     console.error('Error al actualizar la membresía:', error);
                     this.successMessage = '';
@@ -111,7 +111,7 @@ async updateMembership() {
                     newValue += value[i];
                 }
             }
-
+            
             // Si el campo es el número de tarjeta, formatearlo
             if (event.target.id === 'card') {
                 // Agregar un espacio cada 4 dígitos, excepto al final
@@ -155,7 +155,7 @@ async updateMembership() {
             </div>
             <div>
                 <label for="amount">Precio:</label>
-                <input type="number" id="amount" v-model.number="paymentDetails.amount" readonly required>
+                <input type="text" id="amount" v-model.number="paymentDetails.amount" readonly required>
             </div>
             <div v-if="errors.name" class="error-message">Por favor, ingrese un nombre válido.</div>
             <div v-if="errors.card" class="error-message">Número de tarjeta inválido.</div>

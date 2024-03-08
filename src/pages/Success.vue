@@ -7,8 +7,16 @@
 </template>
 
 <script setup>
+    import { onMounted } from 'vue';
     import { auth } from '../service/firebase';
     import { editUserProfile } from '../service/user';
+
+    onMounted(() => {
+        setTimeout(function (){
+
+            updateMembership();
+        },1000)
+    });
 
     const updateMembership = async () => {
         try {
@@ -54,8 +62,6 @@
         // Reemplaza "/perfil" con la URL a la que deseas redirigir
         window.location.href = "/perfil";
     }
-
-    updateMembership();
 </script>
 
 <style scoped>
