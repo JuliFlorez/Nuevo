@@ -197,7 +197,7 @@ export default {
 </script>
 
 <template>
-  <img class="wave" src="../img/cuenta/bg2.png" alt="">
+
   <div class="container">
     <div class="img">
       <img src="../img/cuenta/register.svg" alt="">
@@ -215,7 +215,6 @@ export default {
     <form action="#" @submit.prevent="handleSubmit">
 
       <div class="show tab">
-        <p>Parte 1</p>
         <div class="form">
           <label for="nombre">Nombre</label>
           <input class="input" type="text" id="nombre" v-model="form.displayName" placeholder="Nombre" required>
@@ -236,7 +235,6 @@ export default {
       </div>
 
       <div class="tab">
-        <p>Parte 2</p>
         <div class="form">
           <label for="altura">Altura (cm)</label>
           <input class="input" type="text" id="altura" v-model="form.height" placeholder="Altura" required>
@@ -257,20 +255,15 @@ export default {
 
       </div>
       <div class="tab">
-        <p>Parte 3</p>
         <div class="form">
           <label for="email">Email</label>
           <input class="input" type="text" id="email" v-model="form.email" placeholder="Emial" required>
         </div>
         <div class="form">
           <label for="contraseña">Contraseña</label>
-          <input class="input" type="text" id="contraseña" v-model="form.password" placeholder="Contraseña" required>
+          <input class="input" type="password" id="contraseña" v-model="form.password" placeholder="Contraseña" required>
         </div>
-        <div class="form">
-          <label for="confirmar-contraseña">Confirmar Contraseña</label>
-          <input class="input" type="text" id="confirmar-contraseña" v-model="form.password"
-            placeholder="Confirmar Contraseña" required>
-        </div>
+
       </div>
       <div class="btnMover">
         <button type="button" class="atras">Atras</button>
@@ -310,16 +303,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.wave {
-  position: absolute;
-  height: 100%;
-  right: 0;
-  bottom: 0;
-  z-index: auto;
-  /* top: 5.5%; */
-  /* Ajusta la posición vertical según tus necesidades */
 }
 
 .img {

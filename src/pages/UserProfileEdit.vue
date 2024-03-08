@@ -101,9 +101,10 @@ export default {
           <div class="mb-3">
             <label for="goal" class="form-label">Meta</label>
             <select id="goal" class="form-select" v-model="userData.goal">
-              <option value="Subir de Peso">Subir de Peso</option>
-              <option value="Bajar de Peso">Bajar de Peso</option>
-              <option value="Volumen">Volumen</option>
+              <option value="">Seleccione una opción</option>
+            <option value="Volumen">Volumen</option>
+            <option value="Deficit">Déficit calórico</option>
+            <option value="Definicion">Definición</option>
             </select>
           </div>
           <button type="submit" class="btn btn-primary m-1">

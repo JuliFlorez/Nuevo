@@ -4,7 +4,6 @@
 
     <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o correo electrónico..." class="search-input">
 
-    <!-- Muestra una carga mientras se obtienen los datos -->
     <div v-if="loading" class="loading">Cargando...</div>
 
     <div class="container">
@@ -41,7 +40,6 @@
         </table>
       </div>
 
-      <!-- Paginación -->
       <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
           <li class="page-item" :class="{ 'disabled': paginaActual === 1 }">
@@ -57,7 +55,7 @@
       </nav>
     </div>
 
-    <!-- Modal de confirmación de eliminación -->
+
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">

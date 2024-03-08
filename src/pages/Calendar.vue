@@ -38,7 +38,7 @@
 
 					<div class="column is-half">
 						<div class="field">
-							<label class="label">Inicio de cale</label>
+							<label class="label">Inicio</label>
 							<div class="control">
 								<div class="select is-fullwidth">
 									<select v-model="state.startingDayOfWeek" class="is-fullwidth">
@@ -620,7 +620,6 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	margin-bottom: 2%;
 	min-width: 30rem;
 	max-width: 100rem;
-	min-height: 40rem;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -630,6 +629,7 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 }
 
 .calendar-controls {
+	height: 100%;
 	width: 25%;
 	margin-top: 2px;
 	margin-right: 2%;
@@ -671,7 +671,6 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	justify-content: center;
 	margin-bottom: 20px;
 }
-
 .custom-title {
 	color: #333;
 	font-weight: bold;
@@ -820,13 +819,20 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	outline: none;
 }
 
+@media screen and (max-width: 500px) {
+
+	#example-calendar {
+		min-width: 17rem;
+	}
+}
+
 @media screen and (max-width: 768px) {
 	.box {
 		width: 100%;
 	}
 
 	#example-calendar {
-		width: 20%;
+		width: 10%;
 	}
 
 	.calendar-controls {

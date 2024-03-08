@@ -774,4 +774,5 @@ header are in the CalendarViewHeader component.
 	width: 0; 
 	background: transparent; 
 }
+
 </style>

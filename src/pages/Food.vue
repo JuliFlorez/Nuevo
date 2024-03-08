@@ -383,7 +383,11 @@ export default {
       </div>
       <div class="d-flex flex-column flex-md-row justify-content-md-end mb-3">
         <!-- Botones alineados a la derecha en dispositivos medianos y grandes -->
-        <button v-if="mostrarBotonModal" type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Añadir <i class="fa-solid fa-plus"></i></button>
+        <button v-if="mostrarBotonModal" type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
+            data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Añadir
+            <i class="fa-solid fa-plus"></i>
+          </button>
+
         <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Guardados <i class="fa-regular fa-bookmark"></i></button>
       </div>
     </div>
@@ -412,9 +416,68 @@ export default {
 
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
-        <!-- Contenido del modal -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="exampleModalLabel">Agregar Nueva Comida</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="addFood" class="mt-4">
+              <div class="mb-3">
+                <label class="form-label">¿Es Recomendado?</label><br>
+                <div class="btn-group" role="group" aria-label="Recomendado">
+                  <button :class="['btn', 'btn-primary', { active: isRecomendado }]" @click="setRecomendado(true)">
+                    <i class="fas fa-thumbs-up"></i> Recomendado
+                  </button>
+                  <button :class="['btn', 'btn-secondary', { active: !isRecomendado }]" @click="setRecomendado(false)">
+                    <i class="fas fa-thumbs-down"></i> No Recomendado
+                  </button>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Hora de la Comida:</label><br>
+                <select v-model="selectedTime" class="form-select">
+                  <option value="desayuno">Desayuno</option>
+                  <option value="almuerzo">Almuerzo</option>
+                  <option value="merienda">Merienda</option>
+                  <option value="cena">Cena</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="foodName" class="form-label">Nombre de la comida:</label>
+                <input v-model="newFood.name" type="text" class="form-control" id="foodName" required>
+              </div>
+              <div class="mb-3">
+                <label for="calories" class="form-label">Calorías:</label>
+                <input v-model.number="newFood.calories" type="text" class="form-control" id="calories" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Meta:</label><br>
+                <select v-model="newFood.metaSeleccionada" class="form-select">
+                  <option value="">Selecciona una meta</option>
+                  <option value="Deficit">Deficit</option>
+                  <option value="Volumen">Volumen</option>
+                  <option value="Definicion">Definición</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="recipe" class="form-label">Receta:</label>
+                <textarea v-model="newFood.recipe" class="form-control" id="recipe" rows="4"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="weight" class="form-label">Peso (g):</label>
+                <input v-model.number="newFood.weight" type="number" class="form-control" id="weight" required>
+              </div>
+              <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Agregar comida</button>
+              <div v-if="error" class="alert alert-danger mt-2">
+                Por favor, completa todos los campos para agregar una nueva comida.
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
+
 
     <!-- Lista De Comidas -->
     <div class="mt-4 mb-4 bts container">
@@ -431,7 +494,30 @@ export default {
           <div class="recommended-food">
             <h2 class="text-center">Comida recomendada</h2>
             <div v-if="recomendedFood.length > 0">
-              <!-- Contenido de las tarjetas -->
+              <div class="card-deck">
+                <div v-for="(item, index) in recomendedFood" :key="index" class="card mb-3">
+                  <div class="card-body">
+                    <h4 class="card-title">{{ item.name }}</h4>
+                    <h5 class="card-text">Recomendado en: {{ item.time }}</h5>
+                    <h5 class="card-text">Calorías: {{ item.calories }}</h5>
+                    <h5 class="card-text">Receta: {{ item.recipe }}</h5>
+                    <!-- <p class="card-text">Meta del usuario: {{ state.userGoal }}</p> -->
+                    <h5 class="card-text">Meta De La Comida: {{ item.goal }}</h5>
+                    <h5 v-if="state.userGoal.toLowerCase() === item.goal.toLowerCase()" class="card-text text-success">
+                      ¡Esta comida se alinea con tu meta!</h5>
+                    <p v-else class="card-text text-warning">Esta comida no se alinea con tu meta.</p>
+                    <div class="d-flex align-items-center">
+                      <button @click="guardarComidaEnPerfil(item.id)" class="btn btn-success m-2">
+                        <i v-if="!comidasGuardadas.includes(item.id)" class="fa-regular fa-bookmark"></i>
+                        <i v-else class="fa-solid fa-bookmark"></i>
+                      </button>
+                      <button @click="eliminarComida(item.id)" class="btn btn-danger">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-else>
               <p class="text-center">No hay comidas recomendadas disponibles.</p>
@@ -444,14 +530,33 @@ export default {
           <div class="not-recommended-food">
             <h2 class="text-center">Comida no recomendada</h2>
             <div v-if="unrecomendedFood.length > 0">
-              <!-- Contenido de las tarjetas -->
+              <div class="card-deck">
+                <div v-for="(item, index) in unrecomendedFood" :key="index" class="card mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <!-- <p class="card-text">Hora: {{ item.time }}</p> -->
+                    <p class="card-text">Calorías: {{ item.calories }}</p>
+                    <div class="d-flex align-items-center">
+                      <button @click="guardarComidaEnPerfil(item.id)" class="btn btn-success m-2">
+                        <i v-if="!comidasGuardadas.includes(item.id)" class="fa-regular fa-bookmark"></i>
+                        <i v-else class="fa-solid fa-bookmark"></i>
+                      </button>
+                      <button @click="eliminarComida(item.id)" class="btn btn-danger"><i
+                          class="fa-solid fa-trash"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-else>
               <p class="text-center">No hay comidas no recomendadas disponibles.</p>
             </div>
           </div>
         </div>
+
+
       </div>
+
     </div>
   </div>
 </template>
