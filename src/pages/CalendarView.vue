@@ -1,21 +1,18 @@
 <template>
-	<div
-		aria-label="Calendar"
-		:class="[
-			'cv-wrapper',
-			`locale-${CalendarMath.languageCode(displayLocale)}`,
-			`locale-${displayLocale}`,
-			`y${periodStart.getFullYear()}`,
-			`m${CalendarMath.paddedMonth(periodStart)}`,
-			`period-${displayPeriodUom}`,
-			`periodCount-${displayPeriodCount}`,
-			{
-				past: CalendarMath.isPastMonth(periodStart),
-				future: CalendarMath.isFutureMonth(periodStart),
-				noIntl: !CalendarMath.supportsIntl,
-			},
-		]"
-	>
+	<div aria-label="Calendar" :class="[
+		'cv-wrapper',
+		`locale-${CalendarMath.languageCode(displayLocale)}`,
+		`locale-${displayLocale}`,
+		`y${periodStart.getFullYear()}`,
+		`m${CalendarMath.paddedMonth(periodStart)}`,
+		`period-${displayPeriodUom}`,
+		`periodCount-${displayPeriodCount}`,
+		{
+			past: CalendarMath.isPastMonth(periodStart),
+			future: CalendarMath.isFutureMonth(periodStart),
+			noIntl: !CalendarMath.supportsIntl,
+		},
+	]">
 		<slot :headerProps="headerProps" name="header" />
 		<div class="cv-header-days">
 			<div v-if="displayWeekNumbers" class="cv-weeknumber" />
@@ -158,7 +155,7 @@ const props = withDefaults(
 	}>(),
 	{
 		showDate: undefined,
-		displayPeriodUom: "month",
+		displayPeriodUom: "mes",
 		displayPeriodCount: 1,
 		displayWeekNumbers: false,
 		locale: undefined,
@@ -226,7 +223,7 @@ const periodEnd = computed(
 const periodStartCalendarWeek = computed((): number => {
 	const jan1 = new Date(periodStart.value.getFullYear(), 0, 1)
     const firstThursday = CalendarMath.addDays(jan1, (11 - jan1.getDay()) % 7);
-	const startOfFirstWeek = CalendarMath.beginningOfPeriod(firstThursday, "week", props.startingDayOfWeek)
+	const startOfFirstWeek = CalendarMath.beginningOfPeriod(firstThursday, "semana", props.startingDayOfWeek)
 	const periodWeekStarts = CalendarMath.beginningOfWeek(periodStart.value, props.startingDayOfWeek)
 	return 1 + Math.floor(CalendarMath.dayDiff(startOfFirstWeek, periodWeekStarts) / 7)
 })
@@ -458,11 +455,10 @@ const itemComparer = (a: INormalizedCalendarItem, b: INormalizedCalendarItem) =>
 	return a.id < b.id ? -1 : 1
 }
 
-// Return a list of items that INCLUDE any portion of a given week.
+
 const findAndSortItemsInWeek = (weekStart: Date): INormalizedCalendarItem[] => findAndSortItemsInDateRange(weekStart, CalendarMath.addDays(weekStart, 6))
 
-// Return a list of items that INCLUDE any day within the date range,
-// inclusive, sorted so items that start earlier are returned first.
+
 const findAndSortItemsInDateRange = (startDate: Date, endDate: Date): INormalizedCalendarItem[] =>
 	fixedItems.value.filter((item) => item.endDate >= startDate && CalendarMath.dateOnly(item.startDate) <= endDate, this).sort(itemComparer)
 
@@ -475,8 +471,7 @@ const dayIsSelected = (day: Date): boolean => {
 	return true
 }
 
-// Return a list of items that CONTAIN the week starting on a day.
-// Sorted so the items that start earlier are always shown first.
+
 const getWeekItems = (weekStart: Date): INormalizedCalendarItem[] => {
 	const items = findAndSortItemsInWeek(weekStart)
 	const results = [] as INormalizedCalendarItem[]
@@ -511,8 +506,7 @@ const getWeekItems = (weekStart: Date): INormalizedCalendarItem[] => {
 	return results
 }
 
-// Creates the HTML to prefix the item title showing the items start and/or end time.
-// Midnight is not displayed.
+
 const getFormattedTimeRange = (item: INormalizedCalendarItem): string => {
 	const startTime = '<span class="startTime">' + CalendarMath.formattedTime(item.startDate, displayLocale.value, props.timeFormatOptions) + "</span>"
 	let endTime = ""
@@ -527,7 +521,6 @@ const getItemTitle = (item: INormalizedCalendarItem): string => {
 	return getFormattedTimeRange(item) + " " + item.title
 }
 
-// Compute the top position of the item based on its assigned row within the given week.
 const getItemTop = (item: INormalizedCalendarItem): string => {
 	const r = item.itemRow
 	const h = props.itemContentHeight
@@ -544,9 +537,7 @@ header are in the CalendarViewHeader component.
 
 -->
 <style>
-/* Position/Flex */
 
-/* Make the calendar flex vertically */
 .cv-wrapper {
 	display: flex;
 	flex-direction: column;
@@ -564,7 +555,6 @@ header are in the CalendarViewHeader component.
 .cv-wrapper div {
 	box-sizing: border-box;
 	line-height: 1em;
-	/* font-size: 1em; */
 }
 
 .cv-header-days {
@@ -588,7 +578,6 @@ header are in the CalendarViewHeader component.
 	border-width: 1px 1px 0 0;
 }
 
-/* The calendar grid should take up the remaining vertical space */
 .cv-weeks {
 	display: flex;
 	flex-grow: 1;
@@ -596,8 +585,6 @@ header are in the CalendarViewHeader component.
 	flex-basis: auto;
 	flex-flow: column nowrap;
 	border-width: 0 0 1px 1px;
-
-	/* Allow grid to scroll if there are too may weeks to fit in the view */
 	overflow-y: auto;
 	-ms-overflow-style: none;
 	scrollbar-width: none;
@@ -607,24 +594,17 @@ header are in the CalendarViewHeader component.
 	width: 2rem;
 	position: relative;
 	text-align: center;
-	/* border-width: px 1px 0 0; */
-	/* border-style: solid; */
 	line-height: 1;
 }
 
-/* Use flex basis of 0 on week row so all weeks will be same height regardless of content */
 .cv-week {
 	display: flex;
-
-	/* Shorthand flex: 1 1 0 not supported by IE11 */
 	flex-grow: 1;
 	flex-shrink: 1;
 	flex-basis: 0;
 	flex-flow: row nowrap;
 	min-height: 3em;
 	border-width: 0;
-
-	/* Allow week items to scroll if they are too tall */
 	position: relative;
 	width: 100%;
 	overflow-y: auto;
@@ -634,14 +614,10 @@ header are in the CalendarViewHeader component.
 
 .cv-weekdays {
 	display: flex;
-
-	/* Shorthand flex: 1 1 0 not supported by IE11 */
 	flex-grow: 1;
 	flex-shrink: 0;
 	flex-basis: 0;
 	flex-flow: row nowrap;
-
-	/* Days of the week go left to right even if user's language is RTL (#138) */
 	direction: ltr;
 	position: relative;
 	overflow-y: auto;
@@ -650,17 +626,14 @@ header are in the CalendarViewHeader component.
 
 .cv-day {
 	display: flex;
-
-	/* Shorthand flex: 1 1 0 not supported by IE11 */
 	flex-grow: 1;
 	flex-shrink: 0;
 	flex-basis: 0;
-	position: relative; /* Fallback for IE11, which doesn't support sticky */
-	position: sticky; /* When week's items are scrolled, keep the day content fixed */
+	position: relative; 
+	position: sticky; 
 	top: 0;
 	border-width: 1px 1px 0 0;
 
-	/* Restore user's direction setting (overridden for week) */
 	direction: initial;
 }
 
@@ -669,7 +642,7 @@ header are in the CalendarViewHeader component.
 	align-self: flex-start;
 }
 
-/* Default styling for holiday hover descriptions */
+
 
 .cv-day-number:hover::after {
 	position: absolute;
@@ -682,29 +655,7 @@ header are in the CalendarViewHeader component.
 	line-height: 1.2;
 }
 
-/*
-A bug in Microsoft Edge 41 (EdgeHTML 16) has been reported (#109) where days "disappear" because they are
-wrapping under the next week (despite the "nowrap" on cv-week). This appears to be an issue specifically
-with our metrics and the sticky positioning. I was not able to reproduce this issue in Edge 38, 42, or 44.
-I'm reticent to turn off the sticky functionality for all Edge users because of one version (or perhaps an
-interaction of that version with a specific graphics adapter or other setting). So instead, I'm leaving this
-as an example for anyone forced to support Edge 41 who may see the same issue. If that's the case, just
-add this selector to your own CSS.
 
-@supports (-ms-ime-align: auto) {
-	.cv-day {
-		position: relative;
-	}
-}
-_:-ms-lang(x),
-.cv-day {
-	position: relative;
-}
-.cv-day-number {
-	position: absolute;
-	right: 0;
-}
-*/
 
 .cv-day[draggable],
 .cv-item[draggable] {
@@ -727,17 +678,14 @@ _:-ms-lang(x),
 	background-color: #FF9F0D;
 	border-radius: 10px;
 	border-width: 1px;
-	/* Restore user's direction setting (overridden for week) */
 	direction: initial;
 }
 
-/* Wrap to show entire item title on hover */
+
 .cv-wrapper.wrap-item-title-on-hover .cv-item:hover {
 	white-space: normal;
 	z-index: 1;
 }
-
-/* Colors */
 
 .cv-header-days,
 .cv-header-day,
@@ -749,19 +697,16 @@ _:-ms-lang(x),
 	border-color: #0000001e;
 }
 
-/* Item Times */
 .cv-item .endTime::before {
 	content: "-";
 }
 
-/* Internal Metrics */
 .cv-header-day,
 .cv-day-number,
 .cv-item {
 	padding: 0.2em;
 }
 
-/* Allows emoji icons or labels (such as holidays) to be added more easily to specific dates by having the margin set already. */
 .cv-day-number::before {
 	margin-right: 0.5em;
 }
@@ -794,7 +739,6 @@ _:-ms-lang(x),
 	left: calc((600% / 7));
 }
 
-/* Metrics for items spanning dates */
 
 .cv-item.span1 {
 	width: calc((100% / 7) - 0.05em);
@@ -824,10 +768,10 @@ _:-ms-lang(x),
 	width: calc((700% / 7) - 0.05em);
 }
 
-/* Hide scrollbars for the grid and the week */
+
 .cv-weeks::-webkit-scrollbar,
 .cv-weekdays::-webkit-scrollbar {
-	width: 0; /* remove scrollbar space */
-	background: transparent; /* optional: just make scrollbar invisible */
+	width: 0; 
+	background: transparent; 
 }
 </style>

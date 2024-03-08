@@ -107,10 +107,10 @@ export default {
             </select>
           </div>
           <button type="submit" class="btn btn-primary m-1">
-            Guardar Cambios
+            Guardar cambios
           </button>
           <button type="button" @click="cancelEdit" class="btn btn-danger">
-            Cancelar Cambios
+            Cancelar cambios
           </button>
         </form>
         <div v-else>
@@ -120,3 +120,63 @@ export default {
     </div>
   </div>
 </template>
+
+<style scoped>
+h1{
+  font-size: 40px;
+  margin-top: 20px;
+}
+.text-center {
+  text-align: center;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #00327c;
+  margin-bottom: 10px;
+}
+
+.form-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #00327c;
+  margin-bottom: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+</style>

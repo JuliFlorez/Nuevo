@@ -10,14 +10,12 @@
 export default {
     name: 'Failure',
     mounted() {
-        // Redirigir después de 5 segundos
         setTimeout(() => {
             this.redirectToPage();
         }, 5000);
     },
     methods: {
         redirectToPage() {
-            // Reemplaza "/perfil" con la URL a la que deseas redirigir
             window.location.href = "/premium";
         }
     }
@@ -32,7 +30,7 @@ export default {
 }
 
 h1 {
-    color: #f44336; /* Color rojo para el título */
+    color: #f44336; 
     font-size: 24px;
 }
 

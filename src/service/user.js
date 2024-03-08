@@ -39,7 +39,7 @@ export async function deleteUser(userId) {
 }
 
 /**
- * Crea un perfil de usuario.
+ * 
  * 
  * @param {string} id 
  * @param {{}} data 

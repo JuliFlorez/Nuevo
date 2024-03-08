@@ -2,11 +2,8 @@ import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndP
 import { getFileURL, uploadFile } from "./file-storage";
 import { auth } from "./firebase"
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "./firebase"; // Asegúrate de que la ruta sea correcta
+import { db } from "./firebase"; 
 import { getUserProfileById } from "./user";
-
-
-
 
 let userData = {
     id: null,
@@ -51,12 +48,9 @@ onAuthStateChanged(auth, async user => {
             fullProfileLoaded: true,
         });
 
-        // Convertir _Timestamp a Date
         if (fullProfile && fullProfile.premiumExpiry) {
-            // Convertir _Timestamp a Date
             const premiumExpiryDate = fullProfile.premiumExpiry.toDate();
 
-            // Verificar si la fecha de caducidad ha pasado
             if (premiumExpiryDate < new Date()) {
                 // Si ha pasado, actualiza premium a false
                 await editUserProfile(user.uid, { premium: false });
@@ -79,10 +73,9 @@ onAuthStateChanged(auth, async user => {
  */
 export async function register({ email, password, displayName, height, weight, birthday, gender, goal }) {
     try {
-        // Crear usuario en Firebase Authentication
+
         const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
 
-        // Agregar información adicional del usuario a Firestore
         const userDocRef = doc(db, 'users', userCredentials.user.uid);
         const userProfileData = {
             displayName: displayName,
@@ -96,15 +89,12 @@ export async function register({ email, password, displayName, height, weight, b
             premium: false,
         };
 
-        // Esperar a que se complete la escritura en Firestore
         await setDoc(userDocRef, userProfileData);
 
-        // Actualizar el displayName en Firebase Authentication
         await updateProfile(userCredentials.user, {
             displayName: displayName,
         });
 
-        // Esperar a que ambas operaciones se completen antes de notificar a los observadores y actualizar userData
         await updateUserData({
             id: userCredentials.user.uid,
             email: userCredentials.user.email,
@@ -121,10 +111,8 @@ export async function register({ email, password, displayName, height, weight, b
             fullProfileLoaded: true,
         });
 
-        // Devolver el objeto de usuario de Firebase
         console.log("Usuario registrado en Firebase:", userCredentials.user);
 
-        // Imprimir todos los datos del perfil
         console.log("Datos del perfil almacenados en Firestore:", userProfileData);
 
         return userCredentials.user;
@@ -149,21 +137,19 @@ export function login({ email, password }) {
             return userData;
         })
         .catch(error => {
-            console.error("[auth.js login] Error al autenticar: ", error); // Cambio aquí
+            console.error("[auth.js login] Error al autenticar: ", error); 
             throw error;
         });
 }
-
 
 /**
  * 
  * @returns {Promise}
  */
 export function logout() {
-    clearUserData(); // Agrega esta línea para limpiar los datos del usuario al cerrar sesión
+    clearUserData();
     return signOut(auth);
 }
-
 
 /**
  * @param {{displayName: string|null, height: string|null, weight: string|null, birthday: string|null, gender: string|null, goal: string|null}} data
@@ -172,14 +158,13 @@ export function logout() {
 export async function editUser({ displayName, height, weight, birthday, gender, goal }) {
     try {
         const data = {};
-        if (displayName != null) data.displayName = displayName; // Añadir esta línea para incluir el nombre de usuario
+        if (displayName != null) data.displayName = displayName; 
         if (height != null) data.height = height;
         if (weight != null) data.weight = weight;
         if (birthday != null) data.birthday = birthday;
         if (gender != null) data.gender = gender;
         if (goal != null) data.goal = goal;
 
-        // Agregar console.log para verificar los datos antes de la actualización
         console.log("Datos a actualizar:", JSON.stringify(data));
 
         const promiseAuth = updateProfile(auth.currentUser, data);
@@ -192,12 +177,6 @@ export async function editUser({ displayName, height, weight, birthday, gender, 
         throw error;
     }
 }
-
-
-
-
-
-
 
 /**
  * 

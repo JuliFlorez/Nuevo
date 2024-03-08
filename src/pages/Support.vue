@@ -1,7 +1,30 @@
 <template>
-  
+
   <div class="container my-5">
-    <h1 class="texto-comidas text-center mb-4">Preguntas Frecuentes</h1>
+    <!-- <h1 class="texto-comidas text-center mb-4">Preguntas Frecuentes</h1> -->
+
+
+    <div class="header-content container">
+      <div class="header-info">
+        <div class="header-txt">
+          <h1>Bienvenido a soporte</h1>
+          <p>En esta sección te ofrecemos ayuda para las dudas que te puedan surgir, incluido un chat personal que te
+            dejamos en este botón.</p>
+          <div v-if="!isUserPremium">
+            <h3>Habla con un nutricionista ahora, solo para premiums!</h3>
+          </div>
+          <div v-if="isUserPremium">
+            <router-link to="/usuario/JnmQZTUrzqd6V3vWFHq4wCNPMLS2/chat" class="btn btn-primary">
+              Chat privado con Nutricionista
+            </router-link>
+          </div>
+        </div>
+        <div class="header-img">
+          <img src="../img/soporte-svg.jpg" alt="">
+        </div>
+      </div>
+    </div>
+
 
     <div v-for="(faq, index) in faqs" :key="index" @click="toggleAnswer(index)" class="question card mb-3"
       :class="{ 'open': faq.showAnswer }">
@@ -13,7 +36,7 @@
         <p>{{ faq.answer }}</p>
       </div>
     </div>
-    <div v-if="!isUserPremium">
+    <!-- <div v-if="!isUserPremium">
       <h3>Habla con un nutricionista ahora, solo para premiums!</h3>
     </div>
     <div v-if="isUserPremium">
@@ -21,20 +44,27 @@
       <router-link to="/usuario/JnmQZTUrzqd6V3vWFHq4wCNPMLS2/chat" class="premium-link">
         <h3 class="premium-link">Chat privado con Nutricionista</h3>
       </router-link>
-    </div>
+    </div> -->
 
     <!-- Imágenes centradas -->
-    <div class="text-center my-4">
-      <img src="../img/icono1.svg" alt="Imagen 1" class="img-fluid icon-image">
-      <img src="../img/icono2.svg" alt="Imagen 2" class="img-fluid icon-image">
-      <img src="../img/icono3.svg" alt="Imagen 3" class="img-fluid icon-image">
+
+
+    <div class="text-center my-4 img-tuerca">
+      <img src="../img/soporte-svg.jpg" alt="">
+      <img src="../img/soporte-svg.jpg" alt="">
+      <img src="../img/soporte-svg.jpg" alt="">
+      <img src="../img/soporte-svg.jpg" alt="">
+      <img src="../img/soporte-svg.jpg" alt="">
+      <img src="../img/soporte-svg.jpg" alt=""> 
     </div>
 
+
+
     <!-- Mapa -->
-    <div class="embed-responsive embed-responsive-16by9 text-center mt-4">
+    <div class="embed-responsive embed-responsive-16by9 text-center mt-4 ubication-map">
       <iframe class="embed-responsive-item"
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3283.9928441539078!2d-58.398575124771355!3d-34.604342457530436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccaea670d4e67%3A0x2198c954311ad6d9!2sDa%20Vinci%20%7C%20Primera%20Escuela%20de%20Arte%20Multimedial!5e0!3m2!1ses!2sar!4v1700851026217!5m2!1ses!2sar"
-        width="600" height="400" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        width="600" height="400" style="max-width: 100%;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
   </div>
 </template>
@@ -67,26 +97,26 @@ export default {
     };
   },
   mounted() {
-  this.checkUserPremiumStatus(); // Verifica el estado premium cuando el componente se monta
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      this.checkUserPremiumStatus(); // Verifica el estado premium cuando cambia la autenticación
-    }
-  });
-},
+    this.checkUserPremiumStatus(); // Verifica el estado premium cuando el componente se monta
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        this.checkUserPremiumStatus(); // Verifica el estado premium cuando cambia la autenticación
+      }
+    });
+  },
 
   methods: {
     async checkUserPremiumStatus() {
-  try {
-    const user = auth.currentUser;
-    if (user) {
-      const userProfile = await getUserProfileById(user.uid);
-      this.isUserPremium = userProfile.premium;
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userProfile = await getUserProfileById(user.uid);
+          this.isUserPremium = userProfile.premium;
+        }
+      } catch (error) {
+        console.error('Error al verificar el estado premium:', error);
+      }
     }
-  } catch (error) {
-    console.error('Error al verificar el estado premium:', error);
-  }
-}
 
     ,
     toggleAnswer(index) {
@@ -103,6 +133,69 @@ export default {
 body {
   font-family: 'Montserrat', sans-serif;
 }
+
+.ubication-map {
+  max-width: 100%;
+}
+
+.img-tuerca img {
+
+  max-width: 100%;
+  height: 100px;
+}
+
+.header-img {
+  width: 50%;
+}
+
+.header-img img,
+.nosotros-img img {
+  max-width: 100%;
+  height: 430px;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  /* margin-top: 100px; */
+}
+
+.header-txt {
+  width: 50%;
+  padding-right: 35px;
+}
+
+.header-txt h1 {
+  font-size: 50px;
+  line-height: 70px;
+  font-weight: 400;
+  color: #303030;
+  margin-bottom: 18px;
+}
+
+.header-txt p {
+  font-size: 16px;
+  color: #545454;
+  margin-bottom: 30px;
+}
+
+h1 {
+  font-family: Futura, sans-serif;
+  animation: fadeInUp 2s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 .premium-link {
   text-decoration: none;
@@ -160,5 +253,29 @@ h3 {
   /* Ajusta el tamaño máximo de las imágenes */
   margin: 0 10px;
   /* Ajusta la separación entre las imágenes */
+}
+
+@media (max-width: 600px) {
+  .header-txt {
+    text-align: center;
+    z-index: 10;
+    width: 100%;
+    margin-bottom: 80px;
+    padding: 20px;
+  }
+
+  .header-txt h1 {
+    text-align: center;
+    width: 100%;
+    padding: 0 40px;
+  }
+
+  .header-img {
+    display: none;
+  }
+
+  .container {
+    padding: 0 10px;
+  }
 }
 </style>

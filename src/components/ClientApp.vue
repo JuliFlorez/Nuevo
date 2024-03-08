@@ -70,6 +70,6 @@
   </script>
   
   <style scoped>
-  /* Estilos opcionales */
+  /* Estilos*/
   </style>
   

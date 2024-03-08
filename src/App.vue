@@ -16,7 +16,6 @@ const notification = ref({
 function setNotification(data) {
   notification.value = { ...data };
   if (data.message) {
-    // Muestra el toast
     var toast = new bootstrap.Toast(document.getElementById('liveToast'));
     toast.show();
   }
@@ -52,9 +51,9 @@ function useLogout() {
         <span class="navbar-toggler-icon"></span>
       </button>
 
-        <a class="navbar-brand" href="#">
-          <img src="./img/nav/logo.webp" alt="" class="logo">
-        </a>
+      <router-link to="/">
+        <img src="./img/nav/logo.webp" alt="" class="logo">
+      </router-link>
 
       <div class="sidebar offcanvas offcanvas-start m-2 containerH" tabindex="-1" id="offcanvasNavbar"
         aria-labelledby="offcanvasNavbarLabel">
@@ -113,8 +112,6 @@ function useLogout() {
     </div>
   </nav>
 
-
-
   <div v-if="notification.message != null" class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header">
@@ -164,14 +161,18 @@ function useLogout() {
         <div class="footer-links">
           <h4>Seguinos</h4>
           <div class="socials-links">
-            <a href=""><i class="fa-brands fa-facebook"></i></a>
-            <a href=""><i class="fa-brands fa-instagram"></i></a>
-            <a href=""><i class="fa-brands fa-x-twitter"></i></a>
+            <div class="socials-links">
+              <a href="https://www.facebook.com/profile.php?id=61556732297650&sk=about"><i
+                  class="fa-brands fa-facebook"></i></a>
+              <a href="https://www.instagram.com/nutritrackdv/"><i class="fa-brands fa-instagram"></i></a>
+              <a href="https://twitter.com/NutriTrackdv"><i class="fa-brands fa-twitter"></i></a>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
-    
+
   </footer>
 </template>
 
@@ -192,7 +193,6 @@ nav {
   width: 80px;
   height: auto;
   max-width: 80px;
-  margin-bottom: 10px;
   filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
 }
 
@@ -366,8 +366,7 @@ nav {
 
 .container {
   max-width: 1200px;
-  margin: 0 auto;
-  margin-top: 20px;
+  margin: 10px auto;
 }
 
 .footer {
@@ -427,36 +426,36 @@ nav {
   background-color: #FF9F0D;
 }
 
-@media only screen and (max-width: 1024px) {
-  .logo {
-  position: absolute;
-  top: 40%;
-  left: 5%;
-  transform: translate(-50%, -50%);
+.navbar .container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 10px;
 }
 
-.navbar-nav {
+.navbar .container a {
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
-.navbar-brand {
-  margin: -25px 0; /* Ajusta el valor según sea necesario */
-}
+@media only screen and (max-width: 1024px) {
+
+  .navbar-nav {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-brand {
+    margin: -25px 0;
+  }
 
 }
 
 
 
 @media(max-width: 991px) {
-  .logo {
-    margin: 0 auto; /* Centra el logo horizontalmente */
-    display: block; /* Asegura que el logo sea un elemento de bloque */
-    position: relative; /* Agrega posición relativa para poder alinear */
-    left: 5%; /* Mueve el logo hacia la derecha */
-    bottom: 20px;
-    transform: translateX(-50%); /* Centra horizontalmente */
-  }
+
 
   .sidebar.offcanvas {
     left: -8px;
@@ -479,8 +478,8 @@ nav {
   }
 
   .navbar-brand {
-    margin: 0 auto; /* Centra el logo horizontalmente */
-    text-align: center; /* Alinea el texto del logo al centro */
+    margin: 0 auto;
+    text-align: center;
   }
 
   .custom-title {
@@ -538,7 +537,6 @@ nav {
     width: 80px;
     height: auto;
     max-width: 80px;
-    margin-top: -9%;
     filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
   }
 
@@ -566,14 +564,8 @@ nav {
 
 @media (max-width: 426px) {
   .logo {
-    margin: 0 auto; /* Centra el logo horizontalmente */
-    display: block; /* Asegura que el logo sea un elemento de bloque */
-    position: relative; /* Agrega posición relativa para poder alinear */
-    left: 10%; /* Mueve el logo hacia la derecha */
-    transform: translateX(-50%); /* Centra horizontalmente */
-    bottom: 20px; /* Ajusta la posición vertical del logo */
+    margin: 0 auto;
+    display: block;
   }
 }
-
-
 </style>

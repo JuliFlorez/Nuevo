@@ -25,7 +25,7 @@ export default {
         weight: 0,
         category: '',
         isRecommended: true,
-        metaSeleccionada: '', // Nueva propiedad para la meta seleccionada
+        metaSeleccionada: '',
         noRecomendado: {
           desayuno: false,
           almuerzo: false,
@@ -36,7 +36,7 @@ export default {
       selectedTime: 'desayuno',
       error: false,
       state: {
-        userGoals: {} // Inicializa userGoals como un objeto vacío
+        userGoals: {}
       }
     };
   },
@@ -49,47 +49,38 @@ export default {
       this.loadCategoriesBasedOnTime();
     });
 
-    const self = this; // Guarda una referencia al contexto del componente
+    const self = this;
 
     const auth = getAuth();
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Usuario autenticado
-        // Mostrar el botón
         self.mostrarBotonModal = true;
 
         try {
           const userProfile = await getUserProfileById(user.uid);
           console.log("User profile:", userProfile);
 
-          // Asignar la meta del usuario al estado del componente
           self.state.userGoal = userProfile.goal;
           console.log("User's goal:", self.state.userGoal);
 
-          // Resto del código...
-          // Llamar a loadCategoriesBasedOnTime después de asignar la meta del usuario
           self.loadCategoriesBasedOnTime();
-          // Llamar a foodsavSubscribeToChanges después de obtener el usuario autenticado
+
           self.foodsaveSubscribeToChanges();
         } catch (error) {
           console.error("Error getting user profile:", error);
         }
       } else {
-        // No hay usuario autenticado
-        // Ocultar el botón
+
         self.mostrarBotonModal = false;
       }
     });
-
-
-
 
     this.loadCategoriesBasedOnTime();
   },
 
   created() {
-    this.foodsaveSubscribeToChanges(); // Cargar las comidas guardadas al inicializar el componente
+    this.foodsaveSubscribeToChanges();
   },
 
   computed: {
@@ -129,7 +120,6 @@ export default {
       console.log("Adding new food...");
       console.log("Is Recommended:", this.newFood.isRecommended);
 
-      // Ocultar cualquier modal activo antes de abrir uno nuevo
       $('#exampleModal').modal('hide');
 
       if (this.selectedTime && this.newFood.metaSeleccionada) { // Verifica que se haya seleccionado una meta
@@ -217,7 +207,6 @@ export default {
         } else {
           this.filterFood('Cena');
         }
-        // Filtrar las comidas según el tipo y la meta del usuario
         this.filterFood(type);
       } catch (error) {
         console.error("Error al cargar las comidas según la hora:", error);
@@ -352,8 +341,8 @@ export default {
       console.log("Filtering food by type and user's goal...");
       this.filteredFood = this.food.filter(item => {
         const isInCategory = item.time.toLowerCase().includes(type.toLowerCase());
-        const isMatchingGoal = item.goal.toLowerCase() === this.state.userGoal.toLowerCase(); // Comparar la meta de la comida con la del usuario
-        const isNoRecomendado = this.isNoRecomendado(item); // Utiliza la función isNoRecomendado
+        const isMatchingGoal = item.goal.toLowerCase() === this.state.userGoal.toLowerCase();
+        const isNoRecomendado = this.isNoRecomendado(item);
         return (isNoRecomendado && type.toLowerCase() === 'no recomendado') || (!isNoRecomendado && isInCategory && isMatchingGoal);
       });
     },
@@ -365,7 +354,6 @@ export default {
         const comidaRef = doc(db, 'food', comidaId);
         await deleteDoc(comidaRef);
         console.log("Comida eliminada:", comidaId);
-        // Actualizar la lista local después de eliminar la comida de la base de datos
         this.food = this.food.filter(item => item.id !== comidaId);
         alert('Comida eliminada correctamente.');
       } catch (error) {
@@ -383,36 +371,20 @@ export default {
 
 
 <template>
-
-
-
   <div class="banner">
     <img src="../img/banner-food.jpg" alt="Banner" class="img-fluid">
   </div>
 
   <div class="container">
-
-    <!-- <h1 class="text-center">Bienvenido a comidas</h1> -->
-    <!-- <div id="h" class="milky">Milky</div> -->
-
-    <div>
-      <div class="header-info">
-        <div class="header-txt">
-          <h1>Bienvenido a comidas</h1>
-          <p>En esta sección buscamos ayudarte en tu alimentación dependiendo de la meta que hayas elegido, además te
-            recomendamos el momento del día en el que la puedes consumir. Recorda que estas comidas son solo
-            recomendaciones,
-            podes consumir lo que creas correcto.</p>
-        </div>
-        <div class="d-flex flex-column flex-md-row justify-content-md-end mb-3">
-          <!-- Botones alineados a la derecha en dispositivos medianos y grandes -->
-          <button v-if="mostrarBotonModal" type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
-            data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Añadir
-            <i class="fa-solid fa-plus"></i>
-          </button>
-          <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-            aria-controls="offcanvasRight">Guardados <i class="fa-regular fa-bookmark"></i></button>
-        </div>
+    <div class="header-info">
+      <div class="header-txt">
+        <h1 class="text-center">Bienvenido a comidas</h1>
+        <p class="text-center">En esta sección buscamos ayudarte en tu alimentación dependiendo de la meta que hayas elegido, además te recomendamos el momento del día en el que la puedes consumir. Recuerda que estas comidas son solo recomendaciones, puedes consumir lo que creas correcto.</p>
+      </div>
+      <div class="d-flex flex-column flex-md-row justify-content-md-end mb-3">
+        <!-- Botones alineados a la derecha en dispositivos medianos y grandes -->
+        <button v-if="mostrarBotonModal" type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Añadir <i class="fa-solid fa-plus"></i></button>
+        <button class="btn btn-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Guardados <i class="fa-regular fa-bookmark"></i></button>
       </div>
     </div>
 
@@ -429,93 +401,24 @@ export default {
               <div class="card-body">
                 <h5 class="card-title">{{ comida.name }}</h5>
                 <p class="card-text">Calorías: {{ comida.calories }}</p>
-                <!-- Agrega aquí cualquier otra información que desees mostrar -->
                 <button @click="eliminarComidaDePerfil(comida.id)" class="btn btn-danger">Eliminar</button>
               </div>
             </div>
           </div>
-
-
-
         </ul>
         <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="offcanvas">Cerrar</button>
       </div>
     </div>
 
-
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title fs-5" id="exampleModalLabel">Agregar Nueva Comida</h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="addFood" class="mt-4">
-              <div class="mb-3">
-                <label class="form-label">¿Es Recomendado?</label><br>
-                <div class="btn-group" role="group" aria-label="Recomendado">
-                  <button :class="['btn', 'btn-primary', { active: isRecomendado }]" @click="setRecomendado(true)">
-                    <i class="fas fa-thumbs-up"></i> Recomendado
-                  </button>
-                  <button :class="['btn', 'btn-secondary', { active: !isRecomendado }]" @click="setRecomendado(false)">
-                    <i class="fas fa-thumbs-down"></i> No Recomendado
-                  </button>
-                </div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Hora de la Comida:</label><br>
-                <select v-model="selectedTime" class="form-select">
-                  <option value="desayuno">Desayuno</option>
-                  <option value="almuerzo">Almuerzo</option>
-                  <option value="merienda">Merienda</option>
-                  <option value="cena">Cena</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="foodName" class="form-label">Nombre de la comida:</label>
-                <input v-model="newFood.name" type="text" class="form-control" id="foodName" required>
-              </div>
-              <div class="mb-3">
-                <label for="calories" class="form-label">Calorías:</label>
-                <input v-model.number="newFood.calories" type="text" class="form-control" id="calories" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Meta:</label><br>
-                <select v-model="newFood.metaSeleccionada" class="form-select">
-                  <option value="">Selecciona una meta</option>
-                  <option value="Deficit">Deficit</option>
-                  <option value="Volumen">Volumen</option>
-                  <option value="Definicion">Definición</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="recipe" class="form-label">Receta:</label>
-                <textarea v-model="newFood.recipe" class="form-control" id="recipe" rows="4"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="weight" class="form-label">Peso (g):</label>
-                <input v-model.number="newFood.weight" type="number" class="form-control" id="weight" required>
-              </div>
-              <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Agregar comida</button>
-              <div v-if="error" class="alert alert-danger mt-2">
-                Por favor, completa todos los campos para agregar una nueva comida.
-              </div>
-            </form>
-          </div>
-        </div>
+        <!-- Contenido del modal -->
       </div>
     </div>
 
-
-
-
-
     <!-- Lista De Comidas -->
-
     <div class="mt-4 mb-4 bts container">
-
-      <div class="tex-center mb-4 bts">
+      <div class="text-center mb-4 bts">
         <button @click="filterFood('Desayuno')" class="btn btn-primary m-2">Desayuno</button>
         <button @click="filterFood('Almuerzo')" class="btn btn-primary m-2">Almuerzo</button>
         <button @click="filterFood('Merienda')" class="btn btn-primary m-2">Merienda</button>
@@ -528,30 +431,7 @@ export default {
           <div class="recommended-food">
             <h2 class="text-center">Comida recomendada</h2>
             <div v-if="recomendedFood.length > 0">
-              <div class="card-deck">
-                <div v-for="(item, index) in recomendedFood" :key="index" class="card mb-3">
-                  <div class="card-body">
-                    <h4 class="card-title">{{ item.name }}</h4>
-                    <h5 class="card-text">Recomendado en: {{ item.time }}</h5>
-                    <h5 class="card-text">Calorías: {{ item.calories }}</h5>
-                    <h5 class="card-text">Receta: {{ item.recipe }}</h5>
-                    <!-- <p class="card-text">Meta del usuario: {{ state.userGoal }}</p> -->
-                    <h5 class="card-text">Meta De La Comida: {{ item.goal }}</h5>
-                    <h5 v-if="state.userGoal.toLowerCase() === item.goal.toLowerCase()" class="card-text text-success">
-                      ¡Esta comida se alinea con tu meta!</h5>
-                    <p v-else class="card-text text-warning">Esta comida no se alinea con tu meta.</p>
-                    <div class="d-flex align-items-center">
-                      <button @click="guardarComidaEnPerfil(item.id)" class="btn btn-success m-2">
-                        <i v-if="!comidasGuardadas.includes(item.id)" class="fa-regular fa-bookmark"></i>
-                        <i v-else class="fa-solid fa-bookmark"></i>
-                      </button>
-                      <button @click="eliminarComida(item.id)" class="btn btn-danger">
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <!-- Contenido de las tarjetas -->
             </div>
             <div v-else>
               <p class="text-center">No hay comidas recomendadas disponibles.</p>
@@ -564,66 +444,29 @@ export default {
           <div class="not-recommended-food">
             <h2 class="text-center">Comida no recomendada</h2>
             <div v-if="unrecomendedFood.length > 0">
-              <div class="card-deck">
-                <div v-for="(item, index) in unrecomendedFood" :key="index" class="card mb-3">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ item.name }}</h5>
-                    <!-- <p class="card-text">Hora: {{ item.time }}</p> -->
-                    <p class="card-text">Calorías: {{ item.calories }}</p>
-                    <div class="d-flex align-items-center">
-                      <button @click="guardarComidaEnPerfil(item.id)" class="btn btn-success m-2">
-                        <i v-if="!comidasGuardadas.includes(item.id)" class="fa-regular fa-bookmark"></i>
-                        <i v-else class="fa-solid fa-bookmark"></i>
-                      </button>
-                      <button @click="eliminarComida(item.id)" class="btn btn-danger"><i
-                          class="fa-solid fa-trash"></i></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <!-- Contenido de las tarjetas -->
             </div>
             <div v-else>
               <p class="text-center">No hay comidas no recomendadas disponibles.</p>
             </div>
           </div>
         </div>
-
       </div>
-
     </div>
-
   </div>
 </template>
 
 
 
 <style scoped>
-/* #h{
 
-  margin-bottom: 10%;
-}
-.milky {
-  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;;
-  text-transform: uppercase;
-  display: block;
-  font-size: 92px;
-  color: #f1ebe5;
-  text-shadow: 0 8px 9px #c4b59d, 0px -2px 1px #fff;
-  font-weight: bold;
-  letter-spacing: -4px;
-  text-align: center;
-  background: linear-gradient(to bottom, #ece4d9 0%,#e9dfd1 100%);
-  position: absolute;
-  padding: 100px 200px;
-  top: 18%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  border-radius: 20px;
-
-} */
 
 .banner {
-  width: 100vw;
+  max-width: 100vw;
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   /* Ancho completo de la ventana */
   overflow: hidden;
   /* Para que la imagen no tenga scroll horizontal */
@@ -631,8 +474,7 @@ export default {
 
 
 .banner img {
-  width: 100%;
-  height: 500px !important;
+  max-width: 100%;
   object-fit: cover;
   /* Para que la imagen cubra todo el contenedor */
 }
@@ -640,6 +482,7 @@ export default {
 .header-info {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-top: 100px;
 }
 
@@ -663,6 +506,22 @@ export default {
 }
 
 
+.btn-recomendado {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-recomendado.active {
+  background: #0069d9;
+}
+
+.btns-recomendado {
+  max-width: 100%;
+}
 
 body {
   font-family: 'Montserrat', sans-serif;
@@ -852,11 +711,16 @@ form {
 
 .bts {
   background-color: #033f1c84;
-  padding: 12px 70px;
+  padding: 12px 20px;
   border-radius: 25px;
+  max-width: 100%;
 }
 .bts.container{
   padding: 24px 70px;
+}
+
+.bts.container .btn-primary {
+  max-width: 100%;
 }
 
 .btn-primary {
@@ -903,10 +767,53 @@ form {
   border: 1px solid #ddd;
   border-radius: 10px;
   transition: box-shadow 0.3s;
+  margin-bottom: 10px; /* Margen inferior entre tarjetas martina acordate de fijarte el offcanvas con esto y las tarjetas*/
 }
 
 .card:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.57);
   /* Sombra más pronunciada al pasar el mouse */
 }
+
+
+.offcanvas {
+  background-color: #f8f9fa; /* Color de fondo del modal */
+  width: 300px; /* Ancho del modal */
+}
+
+.offcanvas-header {
+  background-color: #007bff; /* Color de fondo del encabezado */
+  color: white; /* Color del texto del encabezado */
+}
+
+.offcanvas-body {
+  padding: 20px; /* Espaciado interno del cuerpo del modal */
+}
+
+
+@media (max-width: 680px) {
+  .header-info {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-info .header-txt {
+    width: 100%;
+    padding: 0;
+  }
+
+  .me-2 {
+  padding:0;
+
+}
+
+.bts.container{
+  padding:0;
+}
+
+  
+}
+
 </style>

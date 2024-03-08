@@ -14,8 +14,8 @@
 							<div class="control">
 								<div class="select is-fullwidth">
 									<select v-model="state.displayPeriodUom" class="is-fullwidth">
-										<option>month</option>
-										<option>week</option>
+										<option>mes</option>
+										<option>semana</option>
 									</select>
 								</div>
 							</div>
@@ -38,7 +38,7 @@
 
 					<div class="column is-half">
 						<div class="field">
-							<label class="label">Inicio de calendario</label>
+							<label class="label">Inicio de cale</label>
 							<div class="control">
 								<div class="select is-fullwidth">
 									<select v-model="state.startingDayOfWeek" class="is-fullwidth">
@@ -101,12 +101,11 @@
 			</CalendarView>
 		</div>
 	</div>
-	<!-- <button class="button is-primary" @click="shareCalendar">Compartir Calendario</button> -->
 
 	<div class="containerCalendar" v-if="!route.params.id">
 		<div class="card is-small" v-if="!state.userPremium">
 			<div class="card-content">
-				<p> Hacete premium ahora perra </p>
+				<p>Hacete premium ahora para disfrutar de mas opciones!</p>
 			</div>
 		</div>
 
@@ -191,8 +190,6 @@
 </template>
 
 <script setup lang="ts">
-// Using the publish version, you would do this instead:
-// import { CalendarView, CalendarViewHeader, CalendarMath } from "vue-simple-calendar"
 import CalendarView from "./CalendarView.vue"
 import CalendarViewHeader from "./CalendarViewHeader.vue"
 import CalendarMath from "./CalendarMath"
@@ -211,14 +208,11 @@ const sharedCalendarLink = ref('');
 
 const route = useRoute();
 
-
 let editMode = ref(false)
-let editedItem = ref({}) // Inicializar con un objeto vacío
+let editedItem = ref({}) 
 
 let showModal = ref(false);
 let selectedModalItem = ref(null)
-
-
 
 const thisMonth = (d: number, h?: number, m?: number): Date => {
 	const t = new Date()
@@ -250,14 +244,14 @@ interface IExampleState {
 }
 
 const state = reactive({
-	/* Show the current month, and give it some fake items to show */
+
 	showDate: thisMonth(1),
 	// items: [],
 	message: "",
 	startingDayOfWeek: 0,
 	disablePast: false,
 	disableFuture: false,
-	displayPeriodUom: "month",
+	displayPeriodUom: "mes",
 	displayPeriodCount: 1,
 	displayWeekNumbers: false,
 	showTimes: true,
@@ -289,11 +283,6 @@ const themeClasses = computed(() => ({
 }))
 
 const myDateClasses = (): Record<string, string[]> => {
-	// This was added to demonstrate the dateClasses prop. Note in particular that the
-	// keys of the object are `yyyy-mm-dd` ISO date strings (not dates), and the values
-	// for those keys are strings or string arrays. Keep in mind that your CSS to style these
-	// may need to be fairly specific to make it override your theme's styles. See the
-	// CSS at the bottom of this component to see how these are styled.
 	const o = {} as Record<string, string[]>
 	const theFirst = thisMonth(1)
 	const ides = [2, 4, 6, 9].includes(theFirst.getMonth()) ? 15 : 13
@@ -320,7 +309,6 @@ const totalCalories = computed(() => {
 });
 
 
-// Reinicia el mensaje al cambiar de mes
 watch(() => state.showDate, (newDate) => {
 	const currentDate = new Date();
 	if (newDate.getMonth() !== currentDate.getMonth()) {
@@ -328,11 +316,10 @@ watch(() => state.showDate, (newDate) => {
 	}
 });
 
-
 const editItem = (item) => {
 	console.log("Editando...", item);
 	editMode.value = true;
-	editedItem.value = { ...item }; // Copiar el item seleccionado en editedItem
+	editedItem.value = { ...item }; 
 };
 
 const saveEditedItem = () => {
@@ -350,9 +337,8 @@ const saveEditedItem = () => {
 	calendarUpdate(editedItem.value.id, editedData)
 		.then(() => {
 			console.log("Item updated successfully!");
-			editMode.value = false; // Desactivar el modo de edición
-			closeModal(); // Cerrar el modal si es necesario
-			// Aquí podrías actualizar los datos en tu aplicación si es necesario
+			editMode.value = false; 
+			closeModal(); 
 		})
 		.catch((error) => {
 			console.error("Error updating item:", error);
@@ -362,10 +348,6 @@ const saveEditedItem = () => {
 
 const saveItem = () => {
 	if (editedItem.value && editedItem.value.id) {
-		// Guardar los cambios en localStorage
-		// saveItemsToLocalStorage();
-
-		// Solo llamar a calendarUpdate() si estamos en modo edición
 		if (editMode.value) {
 			calendarUpdate(editedItem.value.id, editedItem.value)
 				.then(() => {
@@ -383,7 +365,7 @@ const saveItem = () => {
 const shareCalendar = () => {
 	const calendarData = {
 		title: "Mi Calendario",
-		items: state.items // Aquí puedes agregar cualquier otra información relevante del calendario
+		items: state.items 
 	};
 
 	let eventText = "Mis eventos:\n";
@@ -398,19 +380,16 @@ const shareCalendar = () => {
 		navigator.share({
 			title: calendarData.title,
 			text: "¡Echa un vistazo a mi calendario!",
-			url: `${route.matched[0].path}/${state.userId}` // Puedes ajustar esto para que apunte a la URL de tu aplicación
+			url: `${route.matched[0].path}/${state.userId}`
 		}).then(() => {
 			console.log("Calendario compartido con éxito.");
 		}).catch((error) => {
 			console.error("Error al compartir el calendario:", error);
 		});
 	} else {
-		// Si la API navigator.share no está disponible, proporciona un mensaje alternativo o una URL para que los usuarios la copien manualmente
 		alert("No es posible compartir el calendario en este dispositivo. Puedes copiar la URL del calendario y compartirla manualmente.");
 	}
 };
-
-
 
 
 onMounted(async () => {
@@ -423,7 +402,6 @@ onMounted(async () => {
 				state.userId = userProfile.id;
 				console.log("User's id:", state.userId);
 
-				// Asigna el objetivo del usuario al campo userGoal del estado del componente
 				state.userGoal = userProfile.goal;
 				console.log("User's goal:", state.userGoal);
 
@@ -453,14 +431,12 @@ onMounted(async () => {
 				state.userAge = calculateAge(userProfile.birthday);
 				console.log("User's age:", state.userAge);
 
-				// Suscríbete a los cambios en el calendario
 				calendarSubscribeToChanges((calendars) => {
 					console.log("Received updated calendar data:", calendars);
 
 					state.items = calendars.map((calendar) => ({
 						id: calendar.id,
 						startDate: calendar.startDate,
-						// endDate: calendar.endDate,
 						calories: calendar.calories,
 						hora: calendar.hora,
 						title: calendar.title,
@@ -472,7 +448,6 @@ onMounted(async () => {
 			}
 		} else {
 			console.error("User is not authenticated");
-			// Lógica adicional si el usuario no está autenticado
 		}
 	});
 
@@ -508,8 +483,7 @@ const maxCal = computed(() => {
 			console.log("User's goal is not recognized.");
 			break;
 	}
-	// Convertir las calorías máximas a un valor mensual
-	maxCal = maxCal * 30; // Suponiendo que un mes tiene 30 días
+	maxCal = maxCal * 30;
 
 	return maxCal;
 });
@@ -522,8 +496,6 @@ const periodChanged = (): void => {
 	//console.log(eventSource)
 	//console.log(range)
 }
-
-//modal
 
 const showItemModal = (item) => {
 	selectedModalItem.value = item;
@@ -543,11 +515,10 @@ const clickTestAddItem = (): void => {
 
 	const newItem = {
 		startDate: state.newItemStartDate,
-		// endDate: state.newItemEndDate,
 		title: state.newItemTitle,
 		calories: state.newItemCalories,
 		hora: new Date().toLocaleTimeString(),
-		description: state.newItemDescription, // Agregar la descripción aquí
+		description: state.newItemDescription, 
 
 	};
 
@@ -561,13 +532,10 @@ const clickTestAddItem = (): void => {
 const clickDeleteAllCalendars = () => {
 	console.log("Deleting all calendars...");
 
-	// Itera sobre todos los calendarios en state.items y los elimina uno por uno
 	state.items.forEach(calendar => {
 		calendarDelete(calendar.id);
 	});
 
-
-	// Actualiza el mensaje para mostrar que se han eliminado todos los calendarios con éxito
 	state.message = "All calendars deleted successfully!";
 };
 
@@ -632,8 +600,6 @@ const finishSelection = (dateRange: Date[]): void => {
 
 const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	state.message = `Lo moviste al dia: ${date.toLocaleDateString()}`
-	// Determine the delta between the old start date and the date chosen,
-	// and apply that delta to both the start and end date to move the item.
 	const eLength = CalendarMath.dayDiff(item.startDate, date)
 	item.originalItem.startDate = CalendarMath.addDays(item.startDate, eLength)
 	item.originalItem.endDate = CalendarMath.addDays(item.endDate, eLength)
@@ -644,7 +610,6 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 
 <style>
 @import "https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css";
-/* For apps using the npm package, the below URLs should reference /node_modules/vue-simple-calendar/dist/css/ instead */
 
 #example-calendar {
 	display: flex;
@@ -662,12 +627,11 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 
 .box {
 	border: 2px solid #019640;
-
 }
 
 .calendar-controls {
 	width: 25%;
-	margin-top: 1%;
+	margin-top: 2px;
 	margin-right: 2%;
 
 }
@@ -691,11 +655,9 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 	flex-grow: 1;
 	overflow-x: hidden;
 	overflow-y: auto;
-	max-height: 80vh;
 	background-color: #ffffff;
 	border-radius: 3px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
 }
 
 .custom-card {
@@ -713,20 +675,14 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 .custom-title {
 	color: #333;
 	font-weight: bold;
-	/* Otros estilos personalizados para el título */
 }
 
-
-/* For long calendars, ensure each week gets sufficient height. The body of the calendar will scroll if needed */
 #example-calendar .cv-wrapper.period-month.periodCount-2 .cv-week,
 #example-calendar .cv-wrapper.period-month.periodCount-3 .cv-week,
 #example-calendar .cv-wrapper.period-year .cv-week {
 	min-height: 6rem;
 }
 
-/* These styles are optional, to illustrate the flexbility of styling the calendar purely with CSS. */
-
-/* Add some styling for items tagged with the "birthday" class */
 #example-calendar .theme-default .cv-item.birthday {
 	background-color: #e0f0e0;
 	border-color: #d7e7d7;
@@ -734,77 +690,53 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 
 #example-calendar .theme-default .cv-item.birthday::before {
 	content: "\1F382";
-	/* Birthday cake */
 	margin-right: 0.5em;
 }
 
 .edit-delete-buttons {
 	text-align: center;
-	/* Centra los botones */
 }
 
 .icon-button {
 	padding: 10px 20px;
-	/* Espaciado interno */
 	margin: 0 10px;
-	/* Margen entre botones */
 	border: none;
-	/* Elimina el borde */
 	border-radius: 5px;
-	/* Bordes redondeados */
 	cursor: pointer;
-	/* Cambia el cursor al pasar sobre los botones */
 }
 
 .edit-button {
 	background-color: #4CAF50;
-	/* Color de fondo verde */
 	color: white;
-	/* Color del texto blanco */
 }
 
 .delete-button {
 	background-color: #f44336;
-	/* Color de fondo rojo */
 	color: white;
-	/* Color del texto blanco */
 }
 
-/* Estilos para el ícono */
 .icon-button i {
 	margin-right: 5px;
-	/* Espaciado a la derecha del ícono */
 }
 
 .btnCalendar {
 	background-color: #FF9F0D;
-	/* Color de fondo actual */
 	color: black;
-	/* Color del texto */
 	border: 2px solid #FF9F0D;
-	/* Borde del mismo color que el fondo */
 	border-radius: 10px;
-	/* Borde redondeado */
 	padding: 10px 20px;
-	/* Espacio alrededor del botón */
 	font-size: 1.2em;
-	/* Tamaño del texto */
 	cursor: pointer;
-	/* Cursor de apuntador */
 	transition: background-color 0.3s, color 0.3s;
-	/* Transición suave */
 }
 
 .btnCalendar:hover {
 	background-color: white;
-	/* Cambio de color de fondo al pasar el cursor */
 	color: #FF9F0D;
-	/* Cambio de color del texto al pasar el cursor */
 }
 
 .btnCalendar:focus {
 	outline: none;
-	/* Eliminar el contorno al hacer foco */
 }
 
 .item-details {
@@ -818,7 +750,6 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 
 .modal-content {
 	max-width: 600px;
-	/* Ajustar según el tamaño deseado */
 	margin: 0 auto;
 	padding: 20px;
 }
@@ -853,64 +784,45 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 
 .btn-cancel {
 	background-color: #ff6347;
-	/* Color de fondo rojo */
 	color: white;
-	/* Color del texto */
 	border: none;
-	/* Borde */
 	border-radius: 5px;
-	/* Bordes redondeados */
 	padding: 10px 20px;
-	/* Espaciado interno */
 	cursor: pointer;
-	/* Cursor de apuntador */
 	transition: background-color 0.3s, color 0.3s;
-	/* Transición suave */
 	margin-top: 10px;
 }
 
 .btn-cancel:hover {
 	background-color: #d13838;
-	/* Cambio de color de fondo al pasar el cursor */
 }
 
 .btn-cancel:focus {
 	outline: none;
-	/* Eliminar el contorno al hacer foco */
 }
 
 .btn-edit {
 	background-color: #4CAF50;
-	/* Color de fondo verde */
 	color: white;
-	/* Color del texto */
 	border: none;
-	/* Borde */
 	border-radius: 5px;
-	/* Bordes redondeados */
 	padding: 10px 20px;
-	/* Espaciado interno */
 	cursor: pointer;
-	/* Cursor de apuntador */
 	transition: background-color 0.3s, color 0.3s;
-	/* Transición suave */
 	margin-right: 10px;
 }
 
 .btn-edit:hover {
 	background-color: #45a049;
-	/* Cambio de color de fondo al pasar el cursor */
 }
 
 .btn-edit:focus {
 	outline: none;
-	/* Eliminar el contorno al hacer foco */
 }
 
-/* Estilos para pantallas pequeñas */
 @media screen and (max-width: 768px) {
 	.box {
-		width: 80%;
+		width: 100%;
 	}
 
 	#example-calendar {
@@ -919,26 +831,22 @@ const onDrop = (item: INormalizedCalendarItem, date: Date): void => {
 
 	.calendar-controls {
 		width: 10%;
-		/* Ocupar todo el ancho disponible */
 		margin-right: 0;
-		/* Eliminar el margen derecho */
 	}
-
+	.calendar-parent{
+		width: 100%;
+	}
 	.custom-card {
 		width: 100%;
-		/* Ocupar todo el ancho disponible */
 	}
 
 	.container {
 		flex-direction: column;
-		/* Cambiar a dirección de columna para que los elementos se apilen */
 		align-items: center;
-		/* Centrar los elementos horizontalmente */
 	}
 
 	.modal-content {
 		max-width: 90%;
-		/* Reducir el ancho máximo */
 	}
 }
 

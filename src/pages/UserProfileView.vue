@@ -143,6 +143,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
 }
 
 .user-avatar {
@@ -167,8 +168,6 @@ export default {
   padding: 10px;
   margin-top: 40px;
 }
-
-
 
 @media (max-width: 767px) {
   .user-profile-container {

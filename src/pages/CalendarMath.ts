@@ -15,9 +15,9 @@ const beginningOfPeriod = (d: Date, periodUom: string, startDow: number): Date =
 	switch (periodUom) {
 		case "year":
 			return new Date(d.getFullYear(), 0)
-		case "month":
+		case "mes":
 			return new Date(d.getFullYear(), d.getMonth())
-		case "week":
+		case "semana":
 			return beginningOfWeek(d, startDow)
 		default:
 			return d
@@ -43,7 +43,7 @@ const instanceOfMonth = (d: Date): number => Math.ceil(d.getDate() / 7)
 // the day of the month is unchanged. This could cause an unexpected result if the units are "month" and the starting day is
 // higher than the number of days in the destination month. The count can be positive or negative.
 const incrementPeriod = (d: Date, uom: string, count: number) =>
-	new Date(d.getFullYear() + (uom == "year" ? count : 0), d.getMonth() + (uom == "month" ? count : 0), d.getDate() + (uom == "week" ? count * 7 : 0))
+	new Date(d.getFullYear() + (uom == "year" ? count : 0), d.getMonth() + (uom == "mes" ? count : 0), d.getDate() + (uom == "semana" ? count * 7 : 0))
 
 // ******************************
 // Date formatting
@@ -78,8 +78,8 @@ const formattedTime = (d: Date, locale: string, options?: Intl.DateTimeFormatOpt
 const formattedPeriod = (startDate: Date, endDate: Date, periodUom: string, monthNames: string[]) => {
 	const singleYear = startDate.getFullYear() === endDate.getFullYear()
 	const singleMonth = isSameMonth(startDate, endDate)
-	const isYear = periodUom === "year"
-	const isMonth = periodUom === "month"
+	const isYear = periodUom === "año"
+	const isMonth = periodUom === "mes"
 	const isWeek = !isYear && !isMonth
 
 	let s = []
@@ -139,14 +139,14 @@ const isLastDayOfMonth = (d: Date): boolean => d.getMonth() !== addDays(d, 1).ge
 const fromIsoStringToLocalDate = (s: string): Date => {
 	let d = [...Array(7)].map((_) => 0)
 	s.split(/\D/, 7).forEach((s, i) => (d[i] = Number(s)))
-	d[1]-- // adjust month
+	d[1]-- 
 	return new Date(d[0], d[1], d[2], d[3], d[4], d[5], d[6])
 }
 
 const toLocalDate = (d: any): Date => (typeof d === "string" ? fromIsoStringToLocalDate(d) : new Date(d))
 
 const dateOnly = (d: Date | string): Date => {
-	// Always use a copy, setHours mutates argument
+
 	const d2 = new Date(d as unknown as VarDate)
 	d2.setHours(0, 0, 0, 0)
 	return d2
@@ -160,25 +160,25 @@ const languageCode = (l: string): string => l.substring(0, 2)
 const supportsIntl = (): boolean => typeof Intl !== "undefined"
 
 const getFormattedMonthNames = (locale: string, format: DateTimeFormatOption): string[] => {
-	// Use the provided locale and format if possible to obtain the name of the month
+
 	if (!supportsIntl()) return [...Array(12)].map((_) => "")
 	const formatter = new Intl.DateTimeFormat(locale, { month: format })
-	// The year doesn't matter, using 2017 for convenience
+
 	return [...Array(12)].map((_, i) => formatter.format(new Date(2017, i, 1)))
 }
 
 const getFormattedWeekdayNames = (locale: string, format: DateTimeFormatOption, startingDayOfWeek: number): string[] => {
-	// Use the provided locale and format if possible to obtain the name of the days of the week
+
 	if (!supportsIntl()) return [...Array(7)].map((_) => "")
 	const formatter = new Intl.DateTimeFormat(locale, { weekday: format })
-	// 2017 starts on Sunday, so use it as the baseline date
+
 	return [...Array(7)].map((_, i) => formatter.format(new Date(2017, 0, (i + 1 + startingDayOfWeek) % 7)))
 }
 
 const getDefaultBrowserLocale = (): string => {
-	// If not running in the browser, cannot determine a default, return the code for unknown (blank is invalid)
+
 	if (typeof navigator === "undefined") return "unk"
-	// Return the browser's language setting, implementation is browser-specific
+
 	return (navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language).toLowerCase()
 }
 
@@ -186,24 +186,23 @@ const getDefaultBrowserLocale = (): string => {
 // Calendar Items
 // ******************************
 const normalizeItem = (item: ICalendarItem, isHovered: boolean): INormalizedCalendarItem => {
-	// Starting in version 6, classes must be an array of string
-	// Classes may be a string, an array, or null. Normalize to an array
+
 	const itemClasses = item.classes ? [...item.classes] : []
-	// Provides support for pseudo-hover of entire item when one part of it is hovered
+
 	if (isHovered) itemClasses.push("isHovered")
 	return {
 		originalItem: item,
 		startDate: toLocalDate(item.startDate),
-		// For an item without an end date, the end date is the start date
+
 		endDate: toLocalDate(item.endDate || item.startDate),
 		classes: itemClasses,
-		// Items without a title are untitled
+
 		title: item.title || "Untitled",
-		// An ID is *required*. Auto-generating leads to weird bugs because these are used as keys and passed in items
+
 		id: item.id,
-		// Pass the URL along
+
 		url: item.url,
-		// Use the item's title as the tooltip if the tooltip is undefined or null (but not if it is blank -- use blank to essentially disable tooltips)
+
 		tooltip: item.tooltip ?? item.title,
 
 		calories: item.calories,

@@ -101,8 +101,6 @@ function useEditProfile(user) {
     }
 
 
-
-
     return {
         editing,
         editData,
@@ -160,8 +158,8 @@ function useAvatarEditForm(user) {
 <template>
     <LoadingContext :loading="!user.fullProfileLoaded">
         <div class="text-center tituloPrincipal">
-    <h1 class="mb-4 text-5xl font-bold mt-3">Mi Perfil</h1>
-</div>
+            <h1 class="mb-4 text-5xl font-bold mt-6">Mi perfil</h1>
+        </div>
 
 
 
@@ -169,12 +167,10 @@ function useAvatarEditForm(user) {
             <div class="mb-4">
                 <UserProfileData :user="user" />
             </div>
-
-            <hr class="mb-4">
-
-            <div class="text-end">
-                <button class="btn btn-warning mb-3 me-2" @click="handleShowEdit"><i class="fa-solid fa-pen-to-square"
-                        style="color: #000000;"></i> Editar</button>
+            <div class="text-end mb-3">
+                <button class="btn btn-warning me-2" @click="handleShowEdit">
+                    <i class="fa-solid fa-pen-to-square" style="color: #000000;"></i> Editar
+                </button>
             </div>
         </template>
 
@@ -224,9 +220,9 @@ function useAvatarEditForm(user) {
                             <button type="submit" :disabled="processingEdit" class="btn btn-primary me-2">
                                 <span v-if="processingEdit" class="spinner-border spinner-border-sm" role="status"
                                     aria-hidden="true"></span>
-                                Guardar Datos
+                                Guardar datos
                             </button>
-                            <button type="button" class="btn btn-danger" @click="handleHideEdit">Cancelar Edición</button>
+                            <button type="button" class="btn btn-danger" @click="handleHideEdit">Cancelar edición</button>
                         </form>
                     </div>
                 </div>
@@ -238,10 +234,9 @@ function useAvatarEditForm(user) {
 
 
 <style scoped>
-.tituloPrincipal h1 {
-  font-size: 2.5rem; /* Tamaño de fuente */
-  font-weight: bold; /* Grosor de la fuente */
-  margin-top: 1.5rem; /* Margen superior */
-  margin-bottom: 2rem; /* Margen inferior */
-}
+    .tituloPrincipal h1 {
+        font-size: 2.5rem; /* Tamaño de fuente */
+        margin-top: 1.5rem; /* Margen superior */
+        
+    }
 </style>

@@ -29,7 +29,7 @@ const handleLogin = async () => {
             type: 'success',
         });
 
-        router.push({ path: '/' }); // Después de iniciar sesión correctamente, redirige al usuario
+        router.push({ path: '/' }); 
 
     } catch (error) {
         let errorMessage = 'Error al iniciar sesión. Por favor, inténtalo de nuevo más tarde.';
@@ -50,21 +50,20 @@ const handleLogin = async () => {
 };
 
 const showNotificationToast = (message) => {
-    // Actualiza el mensaje del toast
+   
     const toastElement = document.getElementById('liveToast');
     if (toastElement) {
         toastElement.querySelector('.toast-body').innerText = message;
       
-        // Muestra el toast
         var toast = new bootstrap.Toast(toastElement);
         toast.show();
     }
 };
 
 const setNotification = (data) => {
-    console.log('Data recibida en setNotification:', data); // Verifica si el mensaje se está pasando correctamente
+    console.log('Data recibida en setNotification:', data); 
     notification.value = { ...data };
-    console.log('Valor de notification.value:', notification.value); // Verifica el valor de notification.value
+    console.log('Valor de notification.value:', notification.value); 
     if (notification.value.message) {
         showNotificationToast(notification.value.message);
     }
@@ -75,8 +74,7 @@ const setNotification = (data) => {
 
 <template>
 
-<Notification /> <!-- Agrega el componente de notificación aquí -->
-
+<Notification /> 
     <img class="wave" src="../img/cuenta/bg1.png" alt="" />
 
     <div class="container">

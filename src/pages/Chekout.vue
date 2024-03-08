@@ -25,10 +25,8 @@ export default {
         async submitPayment() {
             if (this.validateForm()) {
                 console.log('Detalles del pago:', this.paymentDetails);
-                // Primero verifica que el formulario sea válido
                 try {
                     await this.updateMembership();
-                    // Configura el mensaje de éxito
                     this.successMessage = "Prueba realizado con éxito. ¡Membresía actualizada!";
                 } catch (error) {
                     console.error('Error al actualizar la membresía:', error);
@@ -39,34 +37,25 @@ export default {
                 this.successMessage = '';
             }
         },
-        // ...
-// ...
-
-// ...
 
 async updateMembership() {
     try {
         const userID = auth.currentUser.uid;
         const newPremiumStatus = true;
 
-        // Calcular la fecha de vencimiento (un mes a partir de ahora)
         const currentDate = new Date();
         const expiryDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
 
         console.log("Current Date:", currentDate);
         console.log("Expiry Date:", expiryDate);
 
-        // Imprimir la fecha antes de actualizar la membresía
-        console.log("Updating membership with expiry date:", expiryDate.toLocaleDateString()); // Formatea la fecha localmente
+        console.log("Updating membership with expiry date:", expiryDate.toLocaleDateString()); 
 
-        // Agrega este console log para la fecha de caducidad
         console.log("Membership expiry date:", expiryDate.toLocaleDateString());
 
-        // Actualizar la membresía en el componente del formulario de pago
         await editUserProfile(userID, { premium: newPremiumStatus, premiumExpiry: expiryDate });
 
-        // Llamar a la función en auth.js para actualizar la fecha de vencimiento
-        console.log("Membership updated to:", newPremiumStatus, "Expiry:", expiryDate.toLocaleDateString()); // Formatea la fecha localmente
+        console.log("Membership updated to:", newPremiumStatus, "Expiry:", expiryDate.toLocaleDateString()); 
 
     } catch (error) {
         console.error('Error al actualizar la membresía:', error);
@@ -74,19 +63,12 @@ async updateMembership() {
     }
 }
 
-// ...
-
-
-// ...
-
-        // ...
         ,
         validateForm() {
             this.errors.name = !this.paymentDetails.name;
 
-            // Quitar espacios del número de la tarjeta para la validación
             const cardNumber = this.paymentDetails.card.replace(/\s/g, '');
-            // Ajustar la expresión regular para validar 16 dígitos incluyendo espacios
+
             this.errors.card = !(cardNumber.length === 16 && /^\d{16}$/.test(cardNumber));
 
             this.errors.cvc = !/^\d{3}$/.test(this.paymentDetails.cvc);
@@ -98,27 +80,23 @@ async updateMembership() {
             const expiryDate = new Date(this.paymentDetails.expiry);
             const currentDate = new Date();
 
-            // La fecha de vencimiento debe ser posterior a la fecha actual
             this.errors.expiry = expiryDate <= currentDate;
         },
         filterNumeric(event) {
             let value = event.target.value;
             let newValue = '';
 
-            // Eliminar todos los caracteres que no sean dígitos
             for (let i = 0; i < value.length; i++) {
                 if (!isNaN(value[i]) && value[i] !== ' ') {
                     newValue += value[i];
                 }
             }
-            
-            // Si el campo es el número de tarjeta, formatearlo
+
             if (event.target.id === 'card') {
-                // Agregar un espacio cada 4 dígitos, excepto al final
+
                 newValue = newValue.replace(/(\d{4})(?=\d)/g, '$1 ');
             }
 
-            // Actualizar el valor con el formato correcto
             if (event.target.id === 'card') {
                 this.paymentDetails.card = newValue;
             } else if (event.target.id === 'cvc') {
@@ -193,18 +171,15 @@ async updateMembership() {
 .card-details div {
     flex: 1;
     margin-right: 10px;
-    /* Espacio entre los campos */
 }
 
 .card-details div:last-child {
     margin-right: 0;
-    /* Evita espacio adicional en el último elemento */
 }
 
 input[type="text"],
 input[type="number"],
 input[type="date"] {
-    /* Agrega input[type="date"] */
     width: 100%;
     padding: 8px;
     margin-top: 4px;

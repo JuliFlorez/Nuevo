@@ -103,9 +103,7 @@ const calculateAge = (birthday) => {
 .user-profile-container {
   display: flex;
   padding: 20px;
-  border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .user-avatar {
@@ -124,11 +122,18 @@ const calculateAge = (birthday) => {
 
 .user-info-container {
   width: 100%;
-  background-color: #f0f0f0;
+  background-color: #262928;
   border: 1px solid #ddd;
+  color: #fff;
+  font-weight: 500;
+  font-size: 18px;
   border-radius: 8px;
   padding: 10px;
-  margin-top: 40px;
+}
+
+.user-info-container dt {
+  font-size: 24px;
+  margin-bottom: 4px;
 }
 
 @media (max-width: 767px) {

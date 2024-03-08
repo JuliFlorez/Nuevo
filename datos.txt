@@ -1,9 +1,6 @@
 Carrera: Programacion y Diseño Web
-Materia: Clientes Web Mobile
-Cuatrimistre: Cuarto Cuatrimestre
-Año: 2023
+Año: 2024
 Turno: Tarde
 Comision: DWT4AH
 Apellidos y Nombres: Bianchi Martina, Bucceri Nicolas y Florez Julian
-Docente: Gallino, Santiago
-Caracter De Entrega: 2do Parcial
+Caracter De Entrega: Tesis

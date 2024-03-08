@@ -2,7 +2,6 @@
   <div class="user-management text-center">
     <h2 class="titleABM">Lista de Usuarios</h2>
 
-    <!-- Campo de búsqueda -->
     <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o correo electrónico..." class="search-input">
 
     <!-- Muestra una carga mientras se obtienen los datos -->

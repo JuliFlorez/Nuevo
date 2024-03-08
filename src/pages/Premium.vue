@@ -20,6 +20,9 @@ const loadSDK = () => {
 // Cargar el SDK al montar el componente
 onMounted(() => {
   loadSDK();
+  setTimeout(() => (
+    handleCheckoutClick()
+  ), 1000)
 });
 
 const createPreference = async (orderData) => {
@@ -33,7 +36,7 @@ const createPreference = async (orderData) => {
     });
 
     const data = await response.json();
-    console.log("Preferencia creada:", data); // Agregar console log
+    console.log("Preferencia creada:", data); 
     return data;
   } catch (error) {
     console.error("Error al crear la preferencia:", error);
@@ -59,8 +62,6 @@ const createCheckoutButton = (preferenceId) => {
         },
       },
     });
-
-    window.checkoutButton.click();
   };
 
   renderComponent();
@@ -70,15 +71,15 @@ const handleCheckoutClick = async () => {
     const orderData = {
       title: "Premium",
       quantity: 1,
-      price: 1,
+      price: 1000,
     };
 
     const preference = await createPreference(orderData);
-    console.log("Preferencia obtenida:", preference); // Agregar console log
+    console.log("Preferencia obtenida:", preference); 
     createCheckoutButton(preference.id);
     showCheckoutButton.value = false;
   } catch (error) {
-    console.error("Error al manejar el checkout:", error); // Agregar console log
+    console.error("Error al manejar el checkout:", error); 
     alert("error :(");
   }
 };
@@ -107,7 +108,6 @@ const handleCheckoutClick = async () => {
         </ul>
         <router-link to="/Chekout" class="btn btn-success mt-3">Proba premium</router-link>
         <img src="" alt="">
-        <button v-if="showCheckoutButton" id="checkout-btn" @click="handleCheckoutClick" class="btn btn-primary mt-3">Comprar</button>
         <div id="wallet_container"></div>
       </div>
     </div>

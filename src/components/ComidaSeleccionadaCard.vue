@@ -19,6 +19,6 @@ export default {
 
 <style scoped>
 .card {
-  margin-bottom: 20px; /* Agregar un margen inferior entre las tarjetas */
+  margin-bottom: 20px; 
 }
 </style>

@@ -12,11 +12,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-import { getAuth } from "firebase/auth"; // Importa la función getAuth desde tu módulo de autenticación
+import { getAuth } from "firebase/auth";
 
-// Función para guardar un calendario para un usuario específico
 export async function calendarSave(calendarData) {
-  const auth = getAuth(); // Utiliza la función getAuth del módulo de autenticación
+  const auth = getAuth();
   const user = auth.currentUser;
   if (!user) {
     throw new Error('User is not authenticated');
@@ -24,17 +23,15 @@ export async function calendarSave(calendarData) {
 
   const userId = user.uid;
   const userCalendarsRef = collection(db, `users/${userId}/calendars`);
-  console.log('userCalendarsRef', userCalendarsRef); // Verifica la referencia a la base de datos
+  console.log('userCalendarsRef', userCalendarsRef); 
   return addDoc(userCalendarsRef, {
     ...calendarData,
     created_at: serverTimestamp(),
   });
 }
 
-
-// Función para suscribirse a cambios en los calendarios
 export function calendarSubscribeToChanges(callback, user_id) {
-  const auth = getAuth(); // Utiliza la función getAuth del módulo de autenticación
+  const auth = getAuth(); 
   const user = auth.currentUser;
   if (!user && !user_id) {
     throw new Error('User is not aaa');
@@ -62,7 +59,7 @@ export function calendarSubscribeToChanges(callback, user_id) {
 
 
 export async function calendarUpdate( calendarId, newData) {
-  const auth = getAuth(); // Utiliza la función getAuth del módulo de autenticación
+  const auth = getAuth(); 
   const user = auth.currentUser;
   if (!user) {
     throw new Error('User is not authenticated');
@@ -78,7 +75,7 @@ export async function calendarUpdate( calendarId, newData) {
     console.log(`Calendar with ID ${calendarId} successfully updated in the database.`);
   } catch (error) {
     console.error(`Error updating calendar with ID ${calendarId}:`, error);
-    throw error; // Re-throw the error to handle it elsewhere if needed
+    throw error; 
   }
 }
 
@@ -97,6 +94,6 @@ export async function calendarDelete(calendarId) {
     console.log(`Calendar with ID ${calendarId} successfully deleted from database.`);
   } catch (error) {
     console.error("Error deleting calendar:", error);
-    throw error; // Re-throw the error to handle it elsewhere if needed
+    throw error; 
   }
 }
