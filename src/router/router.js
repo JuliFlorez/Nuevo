@@ -23,7 +23,7 @@ import { subscribeToAuth } from '../service/auth';
 
 const routes = [
     { path: '/',                component: Home, },
-    { path: '/calendario',      component: Calendar, },
+    { path: '/calendario',      component: Calendar, meta: { requiresAuth: true } },
     { path: '/calendario/:id',  component: CalendarId, },
     { path: '/comida',         
      component: Food,
