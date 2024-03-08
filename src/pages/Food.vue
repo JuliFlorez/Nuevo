@@ -3,6 +3,7 @@ import { foodSubscribeToChanges, foodSave, foodDelete } from './../service/food.
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, collection, doc, getDoc, updateDoc, addDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { getUserProfileById } from "./../service/user.js";
+import Swal from 'sweetalert2'
 
 import ComidaSeleccionadaCard from '../components/ComidaSeleccionadaCard.vue';
 
@@ -97,7 +98,11 @@ export default {
 
       if (!newFoodData.category) {
         console.error('Error: Category is required for new food.');
-        alert('Error: Category is required for new food. Please select a category.');
+        Swal.fire({
+          text: 'La categoria es requerida para nuevas comidas, Porfavor seleccionar categoria.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        })
         return;
       }
 
@@ -105,10 +110,18 @@ export default {
         const db = getFirestore();
         const docRef = await addDoc(collection(db, "food"), newFoodData);
         await this.foodsaveSubscribeToChanges();
-        alert('Comida guardada correctamente.');
+        Swal.fire({
+          text: 'Comida guardada correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        })
       } catch (error) {
         console.error("Error adding document: ", error);
-        alert('Error al guardar la comida. Por favor, inténtalo de nuevo.');
+        Swal.fire({
+          text: 'Error al guardar la comida. Por favor, inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        })
       }
     },
 
@@ -130,10 +143,18 @@ export default {
         this.saveFood(newFoodData);
         this.resetNewFood();
         $('#exampleModal').modal('show');
-        alert('Comida guardada correctamente.');
+        Swal.fire({
+          text: 'Comida guardada correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        })
       } else {
         console.error('Error: Time and meta are required for new food.');
-        alert('Error: Time and meta are required for new food. Please select a valid time and meta.');
+        Swal.fire({
+          text: 'Time and meta are required for new food. Please select a valid time and meta.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        })
       }
     },
 
@@ -172,10 +193,18 @@ export default {
 
         this.comidasSeleccionadas.push(comidaId);
 
-        alert('Comida guardada en favoritos correctamente.');
+        Swal.fire({
+          text: 'Comida guardada en favoritos correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        })
       } catch (error) {
         console.error('Error al guardar la comida en el perfil del usuario:', error);
-        alert('Error al guardar la comida en favoritos. Por favor, inténtalo de nuevo.');
+        Swal.fire({
+          text: 'Error al guardar la comida en favoritos. Por favor, inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        })
       }
     },
 
@@ -222,10 +251,18 @@ export default {
         await deleteDoc(comidaDocRef);
 
         this.comidasGuardadas = this.comidasGuardadas.filter(comida => comida.id !== comidaId);
-        alert('Comida eliminada del perfil correctamente.');
+        Swal.fire({
+          text: 'Comida eliminada del perfil correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        })
       } catch (error) {
         console.error('Error al eliminar la comida del perfil del usuario:', error);
-        alert('Error al eliminar la comida del perfil. Por favor, inténtalo de nuevo.');
+        Swal.fire({
+          text: 'Error al eliminar la comida del perfil. Por favor, inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        })
       }
     },
 
@@ -335,16 +372,21 @@ export default {
         const comidaRef = doc(db, 'food', comidaId);
         await deleteDoc(comidaRef);
         this.food = this.food.filter(item => item.id !== comidaId);
-        alert('Comida eliminada correctamente.');
+        Swal.fire({
+          text: 'Comida eliminada correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        })
+        
       } catch (error) {
         console.error('Error al eliminar la comida:', error);
-        alert('Error al eliminar la comida. Por favor, inténtalo de nuevo.');
+        Swal.fire({
+          text: 'Error al eliminar la comida. Por favor, inténtalo de nuevo.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        })
       }
     },
-
-
-
-
   },
 }
 </script>
@@ -846,6 +888,7 @@ form {
     padding: 0 !important;
 
   }
+
   .btn-primary {
     padding: 2px !important;
 

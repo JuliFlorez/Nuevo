@@ -180,6 +180,7 @@
 							<i class="far fa-calendar-xmark"></i> Eliminar
 						</button>
 					</div>
+
 				</template>
 			</div>
 		</div>
@@ -199,7 +200,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { onMounted, reactive, computed } from "vue"
 import { getUserProfileById } from "./../service/user.js";
 import { useRoute } from 'vue-router';
-
+import Swal from "sweetalert2";
 import { ref } from 'vue'
 import { watch } from 'vue';
 
@@ -320,6 +321,7 @@ const editItem = (item) => {
 	console.log("Editando...", item);
 	editMode.value = true;
 	editedItem.value = { ...item }; 
+	
 };
 
 const saveEditedItem = () => {
@@ -336,7 +338,6 @@ const saveEditedItem = () => {
 	// Llamar a calendarUpdate con el objeto plano
 	calendarUpdate(editedItem.value.id, editedData)
 		.then(() => {
-			console.log("Item updated successfully!");
 			editMode.value = false; 
 			closeModal(); 
 		})
@@ -351,7 +352,6 @@ const saveItem = () => {
 		if (editMode.value) {
 			calendarUpdate(editedItem.value.id, editedItem.value)
 				.then(() => {
-					console.log("Item updated successfully!");
 					editMode.value = false;
 					closeModal();
 				})
@@ -381,13 +381,15 @@ const shareCalendar = () => {
 			title: calendarData.title,
 			text: "¡Echa un vistazo a mi calendario!",
 			url: `${route.matched[0].path}/${state.userId}`
-		}).then(() => {
-			console.log("Calendario compartido con éxito.");
 		}).catch((error) => {
 			console.error("Error al compartir el calendario:", error);
 		});
 	} else {
-		alert("No es posible compartir el calendario en este dispositivo. Puedes copiar la URL del calendario y compartirla manualmente.");
+		Swal.fire({
+          text: 'No es posible compartir el calendario en este dispositivo. Puedes copiar la URL del calendario y compartirla manualmente.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        })
 	}
 };
 
@@ -577,10 +579,19 @@ const onClickItem = (item: INormalizedCalendarItem): void => {
 }
 
 const clickDeleteItem = (item) => {
-	console.log("Borrando elemento...");
-	if (confirm("¿Estás seguro de que deseas borrar este elemento?")) {
-		calendarDelete(item.id);
-	}
+	Swal.fire({
+          text: '¿Estás seguro de que deseas borrar este elemento?',
+          icon: 'info',
+          confirmButtonText: 'Aceptar',
+		  denyButtonText: 'Cancelar',
+		  showDenyButton: true
+
+        }).then(result => {
+			if( result.isConfirmed) {
+				closeModal(item)
+				return calendarDelete(item.id)
+			}
+		})
 };
 
 const setShowDate = (d: Date): void => {
